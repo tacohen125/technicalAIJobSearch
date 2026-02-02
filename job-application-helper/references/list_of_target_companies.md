@@ -1,0 +1,28 @@
+# List of Target Companies
+
+- Nvidia
+- Meta
+- Amazon
+- Netflix
+- Figma
+- Northrop Grumman
+- Raytheon
+- Boeing
+- Lockheed Martin
+- Anthropic
+- Anduril
+- Hugging Face
+- Whatnot
+- Apple
+- Toast
+- Stripe
+- Dune
+- Overland AI
+- Zillow
+- Instacart
+- Fluidstack
+- DoorDash
+- Waymo
+- Google
+- Digital Ocean
+- OpenAI
