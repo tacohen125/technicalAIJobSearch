@@ -152,9 +152,10 @@ To use this skill with Claude.ai through your browser, you need to package it in
 
 3. **Upload to Claude.ai**:
    - Go to [claude.ai](https://claude.ai)
-   - Open Settings → Skills
-   - Click "Upload Skill"
-   - Select the `job-application-helper.skill` file
+   - Open Settings → Capabilities → Skills
+   - Click "+ Add"
+   - Click "Upload a skill"
+   - Select the local `job-application-helper.skill` file
    - The skill will appear in your skills library
 
 4. **Use the skill**:
