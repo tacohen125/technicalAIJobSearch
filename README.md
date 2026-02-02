@@ -17,6 +17,31 @@ This repository contains the **job-application-helper** skill, a comprehensive C
 - **Quality Assurance**: Automated page count verification and formatting validation
 - **Multi-Step Workflow**: Guided process from job description analysis to final document delivery
 
+## Table of Contents
+
+- [⚠️ Important: Personalization Required](#️-important-personalization-required)
+  - [Files You MUST Update](#files-you-must-update)
+  - [Quick Start Checklist](#quick-start-checklist)
+- [How the Job Application Helper Works](#how-the-job-application-helper-works)
+  - [Step 1: Job Description Analysis](#step-1-job-description-analysis)
+  - [Step 2: Resume Tailoring](#step-2-resume-tailoring)
+  - [Step 3: Cover Letter Creation](#step-3-cover-letter-creation)
+  - [Step 4: Quality Assurance](#step-4-quality-assurance)
+  - [Step 5: Delivery](#step-5-delivery)
+- [Repository Structure](#repository-structure)
+- [Using the Skill](#using-the-skill)
+  - [With Claude Code (CLI)](#with-claude-code-cli)
+  - [With Claude AI (Browser)](#with-claude-ai-browser)
+- [Advanced Customization](#advanced-customization)
+- [Additional Capabilities](#additional-capabilities)
+- [Technical Details](#technical-details)
+  - [LPS/ATS Optimization Strategy](#lpsats-optimization-strategy)
+  - [XML Editing Approach](#xml-editing-approach)
+- [Dependencies](#dependencies)
+- [License](#license)
+- [Contributing](#contributing)
+- [Acknowledgments](#acknowledgments)
+
 ## ⚠️ Important: Personalization Required
 
 **This skill is pre-configured with example data and MUST be customized before use.** The asset files and reference data are specific to the original user and will not work for your job search without modification.
