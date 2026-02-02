@@ -14,6 +14,90 @@ This repository contains the **job-application-helper** skill, a comprehensive C
 - **Quality Assurance**: Automated page count verification and formatting validation
 - **Multi-Step Workflow**: Guided process from job description analysis to final document delivery
 
+## ⚠️ Important: Personalization Required
+
+**This skill is pre-configured with example data and MUST be customized before use.** The asset files and reference data are specific to the original user and will not work for your job search without modification.
+
+### Files You MUST Update
+
+#### 1. Asset Files (Your Documents)
+
+**Location**: `job-application-helper/assets/`
+
+- **`Jason_J_Garcia-RESUME.docx`**: Replace with your own baseline resume
+  - Use placeholder text like `[City, State]`, `[Phone]`, `[Email]`, `[LinkedIn]` for contact info
+  - Maintain standard section headers (Experience, Education, Technical Skills, Key Accomplishments)
+  - Use consistent formatting (the XML editing approach depends on it)
+  - Ensure it's a `.docx` file, not `.doc` or PDF
+
+- **`Jason_J_Garcia-COVERLETTER.md`**: Replace with your own cover letter template
+  - Keep the placeholder structure for dynamic content
+  - Match your preferred writing style and tone
+
+#### 2. Reference Files (Your Background)
+
+**Location**: `job-application-helper/references/`
+
+- **`user_profile.md`**: Update with YOUR information
+  - Current role, experience level, location
+  - Target roles, industries, salary range
+  - Key competencies and career goals
+  - Work preferences (remote, hybrid, onsite)
+
+- **`list_of_key_accomplishments.md`**: Replace with YOUR achievements
+  - Use metrics and specific outcomes
+  - Format: bold opening + detailed description
+  - Include 5-10 accomplishments to choose from
+
+- **`list_of_target_companies.md`**: Replace with YOUR target companies
+  - Companies you're actively pursuing
+  - Used for networking and research prioritization
+
+#### 3. Skill Configuration (Hard-Coded Dependencies)
+
+**Location**: `job-application-helper/SKILL.md`
+
+The SKILL.md file contains hard-coded references that must be updated:
+
+**Line 12**: LinkedIn Profile URL
+```yaml
+- **LinkedIn Profile**: https://www.linkedin.com/in/24-jason-j-garcia/
+```
+→ Change to your LinkedIn profile URL
+
+**Line 10-11**: Baseline resume filename
+```yaml
+- **Baseline Resume**: `assets/Jason_J_Garcia-RESUME.docx`
+- **Cover Letter Template**: `assets/Jason_J_Garcia-COVERLETTER.md`
+```
+→ Update to match your renamed asset files (or keep the same filenames)
+
+**Line 196-197**: Output filename pattern
+```yaml
+- Resume filename: `Jason_Garcia_RESUME-[CompanyName]-[RoleTitle].docx`
+- Cover letter filename: `Jason_Garcia_COVERLETTER-[CompanyName]-[RoleTitle].docx`
+```
+→ Update to use your name
+
+**Line 6**: Skill description
+```yaml
+description: "... This skill specializes in Technical Program Manager, Senior Integration Engineer, and Engineering Program Manager roles in Tech, Aerospace/Defense, and Outdoors industries..."
+```
+→ Update to reflect your target roles and industries
+
+### Quick Start Checklist
+
+Before using this skill for the first time:
+
+- [ ] Replace `assets/Jason_J_Garcia-RESUME.docx` with your baseline resume
+- [ ] Replace `assets/Jason_J_Garcia-COVERLETTER.md` with your cover letter template
+- [ ] Update `references/user_profile.md` with your background and goals
+- [ ] Update `references/list_of_key_accomplishments.md` with your achievements
+- [ ] Update `references/list_of_target_companies.md` with your target companies
+- [ ] Edit `SKILL.md` line 12 to include your LinkedIn URL
+- [ ] Edit `SKILL.md` lines 196-197 to use your name in output filenames
+- [ ] (Optional) Edit `SKILL.md` line 6 to reflect your target roles/industries
+
 ## How the Job Application Helper Works
 
 The skill follows a structured 5-step workflow:
@@ -205,29 +289,44 @@ If packaging fails:
 - **Invalid YAML**: Check that SKILL.md has valid frontmatter with `name` and `description`
 - **Permission errors**: Ensure you have write permissions in the output directory
 
-## Customization
+## Advanced Customization
 
-To adapt this skill for your own use:
+Beyond the required personalization (see above), you can further customize the skill's behavior:
 
-1. **Update user profile** (`references/user_profile.md`):
-   - Change target roles, industries, salary range
-   - Update key competencies and career goals
+### Workflow Modifications
 
-2. **Replace baseline resume** (`assets/Jason_J_Garcia-RESUME.docx`):
-   - Create your own resume template with placeholders
-   - Maintain consistent formatting for XML editing
-   - Use standard section headers (Experience, Education, Technical Skills)
+1. **Add custom reference files**:
+   - Create additional `.md` files in `references/` for domain-specific knowledge
+   - Reference them in `SKILL.md` workflow steps
+   - Examples: `technical_certifications.md`, `portfolio_projects.md`, `publications.md`
 
-3. **Update accomplishments** (`references/list_of_key_accomplishments.md`):
-   - Add your career highlights with metrics
-   - Follow the format: bold opening + detailed description
+2. **Modify keyword density targets**:
+   - Edit `SKILL.md` line 146 to adjust the 60-80% keyword match threshold
+   - Lower for more natural language, higher for aggressive ATS optimization
 
-4. **Modify target companies** (`references/list_of_target_companies.md`):
-   - List companies you're interested in
-   - Used for quick reference and networking
+3. **Customize section ordering**:
+   - Edit `references/xml_editing_guide.md` to define new section patterns
+   - Adjust resume structure based on your industry norms (e.g., Education before Experience for academia)
 
-5. **Update LinkedIn URL** in `SKILL.md`:
-   - Replace the LinkedIn profile URL with your own
+4. **Add industry-specific templates**:
+   - Create alternate baseline resumes for different industries
+   - Add conditional logic in `SKILL.md` to select templates based on job posting
+
+### Script Customization
+
+1. **Extend `prepare_resume.sh`**:
+   - Add pre-processing steps (e.g., automated backups, version tracking)
+   - Integrate with version control for resume iterations
+
+2. **Enhance `verify_page_count.sh`**:
+   - Add word count validation
+   - Check for common formatting issues
+   - Validate keyword density automatically
+
+3. **Create additional utilities**:
+   - Job description parser (extract keywords automatically)
+   - Cover letter A/B testing tracker
+   - Application tracking integration
 
 ## Additional Capabilities
 
