@@ -97,7 +97,7 @@ The baseline resume must be edited directly using XML manipulation to preserve e
 
 > **Note:** For exact XML attributes (bold tags, bullet numbering, spacing, etc.) for each section below, see `references/xml_editing_guide.md` > Section-Specific Formatting.
 
-This requirement takes precedence over all other optimizations. If keyword density and page count conflict, page count wins. A 2-page resume with 70% keyword match is better than a 3-page resume with 80% keyword match.full length of the resume should not exceed 2-pages.
+This requirement takes precedence over all other optimizations. If keyword density and page count conflict, page count wins. A 2-page resume with 70% keyword match is better than a 3-page resume (which is not allowed) with 80% keyword match.
 
 1. **Branding Headline** (first bold paragraph):
    - Located immediately after LinkedIn URL

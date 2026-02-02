@@ -41,6 +41,7 @@ This repository contains the **job-application-helper** skill, a comprehensive C
 - [License](#license)
 - [Contributing](#contributing)
 - [Acknowledgments](#acknowledgments)
+- [Reports](#reports)
 
 ## ⚠️ Important: Personalization Required
 
@@ -419,6 +420,12 @@ Built using Claude Code's skill framework and drawing on best practices from:
 - Technical recruiting industry standards
 - ATS optimization research
 - Professional resume writing methodologies
+
+---
+
+## Reports
+
+- [Skill Evaluation Report (2026-02-02)](./skill-creator-reports/skill-evaluation-2026-02-02.md) - Best practices evaluation of the job-application-helper skill against Claude Code Skill Creator guidelines.
 
 ---
 
