@@ -6,6 +6,9 @@ A Claude AI skill for automating and optimizing job application materials using 
 
 This repository contains the **job-application-helper** skill, a comprehensive Claude Code skill that tailors resumes and cover letters for specific job postings. The skill specializes in Technical Program Manager, Senior Integration Engineer, and Engineering Program Manager roles in Tech, Aerospace/Defense, and Outdoors industries.
 
+### Example Resume Output
+![Resume evolution: Baseline (left) vs. Claude Tailored (right) ](./images/output-baseline-resumes-sidebyside.png)
+
 ### Key Features
 
 - **LPS/ATS Optimization**: Ensures resumes pass automated screening systems with targeted keyword density (60-80% match)
