@@ -55,5 +55,6 @@ Complete this checklist BEFORE delivering files to the user:
 - [ ] **CONSISTENCY: Section headers match baseline casing**
 - [ ] **FILE NAMING: Files follow naming convention**
 - [ ] **LOCATION: Files are in /mnt/user-data/outputs/**
+- [ ] **CLEANUP: Unpacked directories removed (unless --keep-unpacked for debugging)**
 
 If any item is unchecked, DO NOT deliver. Fix the issue first.

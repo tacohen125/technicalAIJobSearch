@@ -29,3 +29,6 @@ unpacked/
 
 # User-specific outputs
 outputs/
+
+.claude/skills
+docs/

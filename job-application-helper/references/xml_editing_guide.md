@@ -55,22 +55,24 @@ Only modify text content within `<w:t>` tags. When `<w:t xml:space="preserve">` 
 
 ## Baseline Patterns
 
-- Headers like "Key Accomplishments", "Experience", "Education": NOT all caps
+- Headers like "Areas of Expertise", "Technical Skills", "Key Accomplishments", "Experience", "Education": NOT all caps
 - Line spacing: typically 228-240 for body, 276 for headers
 - Indents: -360 left/right for non-bullets, 0 left with 360 hanging for bullets
 - Tabs: `<w:tab/>` used for right-alignment in company/title lines
-- Bold: Only on first few words of accomplishments, all of category names in skills
+- Bold: Only on branding headline and first few impactful words of each Key Accomplishments bullet
+- Areas of Expertise and Technical Skills: Plain text with pipe separators, NOT bulleted
 
 ## Baseline Structure
 
 **Resume sections in order:**
 1. Header (Name, contact info, LinkedIn)
-2. Branding Headline (bold, no header)
-3. Summary (no header, 3-4 sentences)
-4. Key Accomplishments (header + 3 bulleted items, first words bold)
-5. Technical Skills (header + bulleted category lines, categories bold)
-6. Experience (header + positions with company/title/bullets)
-7. Education (header + degree info)
+2. Branding Title (bold, no header, 1-2 lines)
+3. Branding Statement (no header, 3-4 sentences, regular text)
+4. Areas of Expertise (header + up to 4 lines of pipe-separated expertise areas)
+5. Technical Skills (header + up to 2 lines of pipe-separated skills, NOT bulleted)
+6. Key Accomplishments (header + 3 bulleted items, first words bold)
+7. Experience (header + positions with company/title/bullets)
+8. Education (header + institution line [bold name, regular location] + degree line [underlined])
 
 **Key spacing values:**
 - Headers: `line="276"`
@@ -84,26 +86,58 @@ Only modify text content within `<w:t>` tags. When `<w:t xml:space="preserve">` 
 
 ## Section-Specific Formatting
 
-### Branding Headline
+### Branding Title
 - Located immediately after LinkedIn URL
-- Keep bold formatting: `<w:b w:val="1"/>`
+- Bold formatting: `<w:b w:val="1"/>` and `<w:bCs w:val="1"/>`
+- Typically 1-2 lines describing target role/title
+- No section header
+
+### Branding Statement
+- Located immediately after Branding Title
+- Regular text (not bold)
+- 3-4 sentences maximum
+- No section header
 
 ### Key Accomplishments
 - Section header: "Key Accomplishments" (NOT all caps)
 - Each accomplishment: first few words bold (`<w:b w:val="1"/>`), rest regular
 - Use bullet formatting (`<w:numPr>` with appropriate `<w:numId>`)
 
+### Areas of Expertise
+- Section header: "Areas of Expertise" (NOT all caps)
+- Format: Up to 4 lines of pipe-separated expertise areas
+- Example: `Strategic Planning & Execution | Cross-functional Collaboration | Technical Program Management`
+- NOT bulleted (plain paragraphs with standard `w:ind` attributes)
+- Regular text formatting (no bold)
+
 ### Technical Skills
 - Section header: "Technical Skills" (NOT all caps)
-- Format: **Category Name**: skills, skills, skills
-- Category name is bold, colon and content are NOT bold
-- Each skill line is a bulleted paragraph (`<w:numPr>`)
+- Format: Up to 2 lines of pipe-separated tools and technical skills (NOT bulleted)
+- Example: `Google Workspace | Microsoft Office Suite | Asana | Airtable | Jira | Python | SQL | HTML/CSS`
+- Contains mixed content: enterprise tools, project management platforms, programming languages
+- NOT bulleted (plain paragraphs with standard `w:ind` attributes)
+- Regular text formatting (no bold)
+- Tailor by reordering items and adding/removing based on job requirements
 
 ### Experience
 - Section header: "Experience" (NOT all caps)
 - Company line: **Company Name**[TAB]Location (company name bold, location regular)
 - Title line: Job Title[TAB]Dates (both regular text, title may be underlined)
 - Bullets use numbering (`<w:numPr>`)
+
+### Education
+- Section header: "Education" (NOT all caps)
+- Bold, 13pt, centered alignment
+- Institution line: **Institution Name** (bold), Location (regular text)
+  - Both parts in same paragraph but different runs
+  - Format: `<w:b w:val="1"/>` for institution name only
+  - Tab stop at position 9720 for potential right-aligned content
+  - Line spacing: 240
+- Degree line: Degree title (underlined)
+  - Single underline: `<w:u w:val="single"/>`
+  - Tab stop at position 9720
+  - Line spacing: 240
+- No graduation date in baseline
 
 ## Content Reduction Strategy
 

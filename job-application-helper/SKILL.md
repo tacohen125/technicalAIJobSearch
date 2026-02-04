@@ -39,6 +39,29 @@ ATS software parses and stores resume data before human review. Ensure materials
 
 Read `references/user_profile.md` for the user's background, target roles, key competencies, and career goals. Consult this during job description analysis (Step 1) and when mapping experience to job requirements.
 
+## Determining Scope
+
+**CRITICAL: Only work on what the user explicitly requests. Do not assume additional deliverables.**
+
+Before beginning work, identify the user's request:
+
+**Application Materials:**
+- **Resume only?** → Complete Steps 1-2 and 4-5 only
+- **Cover letter only?** → Complete Steps 1, 3-5 only
+- **Both resume and cover letter?** → Complete all Steps 1-5
+- **Neither (research/prep only)?** → Skip to Additional Capabilities below
+
+**Other Requests:**
+- **Company research?** → Read `references/company_research.md` and perform web search
+- **Interview preparation?** → Read `references/interview_preparation.md` and generate questions/responses
+- **Skill gap analysis?** → Read `references/skill_gap_analysis.md` and analyze job requirements
+- **Networking support?** → Read `references/networking_support.md` and draft outreach messages
+- **LinkedIn profile support?** → Read `references/linkedin_profile_optimization.md` to optimize profile sections and content
+- **LinkedIn interactions support?** → Read `references/networking_support.md` for connection requests and engagement strategies
+- **Something else?** → Address the specific request using relevant references as needed
+
+**If the request is ambiguous, ask for clarification before proceeding. Never assume the user wants more than what they explicitly asked for.**
+
 ## Workflow
 
 ### Step 1: Job Description Analysis
@@ -80,6 +103,28 @@ The baseline resume must be edited directly using XML manipulation to preserve e
 
 #### Required Process:
 
+**Option A: Automated workflow with cleanup (Recommended)**
+
+```bash
+bash scripts/create_tailored_resume.sh [output_filename].docx
+```
+
+This orchestrator handles preparation, editing, packing, verification, and automatic cleanup. The workflow:
+1. Prepares resume (copies baseline and unpacks to timestamped directory)
+2. Prompts you to edit XML at `unpacked_[timestamp]/word/document.xml`
+3. Packs edited XML back to .docx
+4. Verifies page count (2 pages required)
+5. Automatically cleans up unpacked directory on success
+
+**Flags:**
+- `--keep-unpacked`: Preserve unpacked directory for debugging
+- `--unpacked-dir <dir>`: Use custom directory name instead of timestamp
+- `--no-verify`: Skip page count verification
+
+**Option B: Manual workflow (for debugging)**
+
+Use individual scripts for granular control:
+
 1. **Copy and unpack the baseline resume**:
    ```bash
    bash scripts/prepare_resume.sh [output_filename].docx [unpacked_dir]
@@ -90,7 +135,14 @@ The baseline resume must be edited directly using XML manipulation to preserve e
 
 3. **Pack the edited XML back to .docx**:
    ```bash
-   python3 /mnt/skills/public/docx/scripts/office/pack.py unpacked/ [output_filename].docx --original /mnt/skills/user/job-application-helper/assets/Jason_J_Garcia-RESUME.docx
+   python3 <pack_script_path> unpacked/ [output_filename].docx --original <skill_dir>/assets/Jason_J_Garcia-RESUME.docx
+   ```
+
+   The `pack_script_path` will be shown by `prepare_resume.sh`. It's typically at `/mnt/skills/public/docx/scripts/office/pack.py` (browser) or `~/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/pack.py` (CLI).
+
+4. **Clean up manually** (remember to do this):
+   ```bash
+   bash scripts/cleanup_unpacked.sh [unpacked_dir] --force
    ```
 
 #### Content Modifications (via XML editing):
@@ -99,38 +151,46 @@ The baseline resume must be edited directly using XML manipulation to preserve e
 
 This requirement takes precedence over all other optimizations. If keyword density and page count conflict, page count wins. A 2-page resume with 70% keyword match is better than a 3-page resume (which is not allowed) with 80% keyword match.
 
-1. **Branding Headline** (first bold paragraph):
+1. **Branding Title** (bold text, no section header):
    - Located immediately after LinkedIn URL
-   - Keep bold formatting
-   - Include 1 sentence, no longer than 2 lines, delivering exactly on what the role is pursuing
+   - Bold text, typically 1-2 lines
+   - Tailor to match the job posting's specific role title or focus area
    - Be exact and concise
-   - Example: "Technical Program Manager specializing in [key role aspect] with 10+ years..."
+   - Example: "Senior Technical Program Manager" or "Technical Program Manager - AR/VR Systems"
 
-2. **Summary section** (paragraph after branding headline):
-   - NO section header
+2. **Branding Statement** (paragraph after branding title):
+   - No section header (continues directly after branding title)
    - Keep to 3-4 sentences maximum
+   - Regular text (not bold)
    - Lead with role-relevant keywords
    - Include 2-3 keywords from top requirements
    - Highlight years of experience matching requirements
    - Mention specific domains/industries relevant to role
 
-3. **Key Accomplishments section**:
+3. **Areas of Expertise section** (NEW in current baseline):
+   - Section header: "Areas of Expertise" (NOT all caps)
+   - Format: Up to 4 lines of expertise areas separated by pipes (|)
+   - Example: `Strategic Planning & Execution | Cross-functional Collaboration | Technical Program Management | Stakeholder Engagement`
+   - Include key competency areas that match target role priorities
+   - Reorder items to prioritize job-relevant expertise first
+   - May adjust items based on job requirements while staying truthful
+
+4. **Technical Skills section**:
+   - Section header: "Technical Skills" (NOT all caps)
+   - Format: Up to 2 lines of pipe-separated skills (NOT bulleted)
+   - Example: `Google Workspace | Microsoft Office Suite | Asana | Jira | Python | SQL | HTML/CSS`
+   - Contains mixed content: enterprise tools, project management platforms, programming languages
+   - Reorder items to prioritize job-relevant skills first
+   - Add/remove skills based on job requirements while staying truthful
+   - Keep format concise and scannable for ATS parsing
+
+5. **Key Accomplishments section**:
    - Section header: "Key Accomplishments" (NOT all caps)
-   - Choose the 3 accomplishments, that match the job best, from baseline, `references/list_of_key_accomplishments.md`, or rewrite existing ones
+   - Choose the 3 accomplishments that match the job best, from baseline, `references/list_of_key_accomplishments.md`, or rewrite existing ones
    - Reorder by relevance: most relevant first
    - Each accomplishment has first few, most impactful words in bold, rest regular
    - Use bullet formatting
    - Inject keywords naturally while maintaining truthfulness
-
-4. **Technical Skills section**:
-   - Section header: "Technical Skills" (NOT all caps)
-   - Each skill line format: **Category Name**: skills, skills, skills
-   - Category name is bold, colon and content are NOT bold
-   - Each skill is a bulleted paragraph
-   - Reorder categories to match job posting priorities
-   - Add new categories as needed (e.g., "Research Operations & Evaluation", "Data Analysis & Dashboards")
-   - Only emphasize skills directly relevant to the target role
-   - Keep all original categories unless clearly irrelevant
 
 5. **Experience section**:
    - Section header: "Experience" (NOT all caps)
@@ -205,6 +265,8 @@ Read `references/qa_and_delivery.md` and complete all verification and pre-deliv
 - **Interview Preparation**: Read `references/interview_preparation.md` for practice questions, STAR response crafting, and format-specific prep.
 - **Skill Gap Analysis**: Read `references/skill_gap_analysis.md` to compare user qualifications against job requirements.
 - **Networking Support**: Read `references/networking_support.md` for LinkedIn outreach, cold emails, and networking strategy.
+- **LinkedIn Profile Optimization**: Read `references/linkedin_profile_optimization.md` for profile sections, headline, about section, skills management, and visibility strategies.
+- **LinkedIn Interactions**: Read `references/networking_support.md` for connection requests and engagement best practices.
 
 ## Important Notes
 

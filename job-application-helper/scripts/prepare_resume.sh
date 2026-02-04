@@ -10,7 +10,19 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKILL_DIR="$(dirname "${SCRIPT_DIR}")"
 BASELINE="${SKILL_DIR}/assets/Jason_J_Garcia-RESUME.docx"
-UNPACK_SCRIPT="/mnt/skills/public/docx/scripts/office/unpack.py"
+
+# Find unpack script - check multiple possible locations
+if [ -f "/mnt/skills/public/docx/scripts/office/unpack.py" ]; then
+    UNPACK_SCRIPT="/mnt/skills/public/docx/scripts/office/unpack.py"
+elif [ -f "${HOME}/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/unpack.py" ]; then
+    UNPACK_SCRIPT="${HOME}/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/unpack.py"
+else
+    echo "ERROR: Could not find unpack.py script" >&2
+    echo "Searched locations:" >&2
+    echo "  - /mnt/skills/public/docx/scripts/office/unpack.py" >&2
+    echo "  - ${HOME}/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/unpack.py" >&2
+    exit 1
+fi
 
 if [ ! -f "${BASELINE}" ]; then
     echo "ERROR: Baseline resume not found at ${BASELINE}" >&2
@@ -37,5 +49,14 @@ echo "Unpacking ${OUTPUT_FILE} to ${UNPACKED_DIR}..."
 python3 "${UNPACK_SCRIPT}" "${OUTPUT_FILE}" "${UNPACKED_DIR}"
 
 echo "Ready. Edit XML at ${UNPACKED_DIR}word/document.xml, then pack with:"
-PACK_SCRIPT="/mnt/skills/public/docx/scripts/office/pack.py"
+
+# Find pack script - check multiple possible locations
+if [ -f "/mnt/skills/public/docx/scripts/office/pack.py" ]; then
+    PACK_SCRIPT="/mnt/skills/public/docx/scripts/office/pack.py"
+elif [ -f "${HOME}/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/pack.py" ]; then
+    PACK_SCRIPT="${HOME}/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/pack.py"
+else
+    PACK_SCRIPT="pack.py"  # Fallback to hoping it's in PATH or user can find it
+fi
+
 echo "  python3 ${PACK_SCRIPT} ${UNPACKED_DIR} ${OUTPUT_FILE} --original ${BASELINE}"
