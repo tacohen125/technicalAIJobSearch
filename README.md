@@ -14,6 +14,9 @@ This repository contains the **job-application-helper** skill, a comprehensive C
 - **LPS/ATS Optimization**: Ensures resumes pass automated screening systems with targeted keyword density (60-80% match)
 - **XML-Based Resume Editing**: Preserves exact formatting by directly editing .docx XML structure
 - **Cover Letter Generation**: Creates compelling, company-specific cover letters with web-researched content
+- **LinkedIn Profile Optimization**: Comprehensive guidance for optimizing all LinkedIn profile sections
+- **LinkedIn Profile Comparison**: Systematic workflow to compare existing profiles against best practices
+- **Scope-Based Execution**: Only works on explicitly requested documents (resume, cover letter, or both)
 - **Quality Assurance**: Automated page count verification and formatting validation
 - **Multi-Step Workflow**: Guided process from job description analysis to final document delivery
 
@@ -88,27 +91,26 @@ This repository contains the **job-application-helper** skill, a comprehensive C
 
 The SKILL.md file contains hard-coded references that must be updated:
 
-**Line 12**: LinkedIn Profile URL
+**Line 11**: LinkedIn Profile URL
 ```yaml
 - **LinkedIn Profile**: https://www.linkedin.com/in/24-jason-j-garcia/
 ```
 → Change to your LinkedIn profile URL
 
-**Line 10-11**: Baseline resume filename
+**Line 10**: Baseline resume filename
 ```yaml
 - **Baseline Resume**: `assets/Jason_J_Garcia-RESUME.docx`
-- **Cover Letter Template**: `assets/Jason_J_Garcia-COVERLETTER.md`
 ```
 → Update to match your renamed asset files (or keep the same filenames)
 
-**Line 196-197**: Output filename pattern
+**Line 256-257**: Output filename pattern
 ```yaml
 - Resume filename: `Jason_Garcia_RESUME-[CompanyName]-[RoleTitle].docx`
 - Cover letter filename: `Jason_Garcia_COVERLETTER-[CompanyName]-[RoleTitle].docx`
 ```
 → Update to use your name
 
-**Line 6**: Skill description
+**Line 3**: Skill description
 ```yaml
 description: "... This skill specializes in Technical Program Manager, Senior Integration Engineer, and Engineering Program Manager roles in Tech, Aerospace/Defense, and Outdoors industries..."
 ```
@@ -123,13 +125,25 @@ Before using this skill for the first time:
 - [ ] Update `references/user_profile.md` with your background and goals
 - [ ] Update `references/list_of_key_accomplishments.md` with your achievements
 - [ ] Update `references/list_of_target_companies.md` with your target companies
-- [ ] Edit `SKILL.md` line 12 to include your LinkedIn URL
-- [ ] Edit `SKILL.md` lines 196-197 to use your name in output filenames
-- [ ] (Optional) Edit `SKILL.md` line 6 to reflect your target roles/industries
+- [ ] Edit `SKILL.md` line 11 to include your LinkedIn URL
+- [ ] Edit `SKILL.md` lines 256-257 to use your name in output filenames
+- [ ] (Optional) Edit `SKILL.md` line 3 to reflect your target roles/industries
 
 ## How the Job Application Helper Works
 
-The skill follows a structured 5-step workflow:
+The skill follows a structured workflow that adapts based on your request:
+
+### Scope Determination
+
+**The skill only works on what you explicitly request:**
+- Resume only
+- Cover letter only
+- Both resume and cover letter
+- LinkedIn profile optimization
+- LinkedIn profile comparison (against best practice reference)
+- Company research, interview prep, skill gap analysis, or networking support
+
+This ensures you get exactly what you need without unnecessary work.
 
 ### Step 1: Job Description Analysis
 
@@ -155,11 +169,13 @@ python3 /path/to/pack.py unpacked/ [output_filename].docx --original baseline_re
 ```
 
 The skill modifies:
-- **Branding Headline**: Role-specific positioning statement
-- **Summary**: 3-4 sentences with top keywords from job description
-- **Key Accomplishments**: Reordered by relevance, keyword-optimized
-- **Technical Skills**: Reordered categories to match job priorities
+- **Branding Title**: Bold, role-specific title (e.g., "Senior Technical Program Manager")
+- **Branding Statement**: 3-4 sentence narrative with top keywords from job description
+- **Areas of Expertise**: Reordered pipe-separated expertise areas matching job priorities
+- **Technical Skills**: Reordered pipe-separated skills matching job requirements
+- **Key Accomplishments**: Reordered by relevance, first words bolded, keyword-optimized
 - **Experience**: Bullets reordered and rewritten with parallel language from job posting
+- **Education**: Institution name (bold), location, degree (underlined)
 
 **Page Limit**: Maintains strict 2-page maximum through strategic content reduction.
 
@@ -191,12 +207,14 @@ Files are delivered with standardized naming:
 ai-assisted-job-search/
 ├── job-application-helper/          # Main skill folder
 │   ├── SKILL.md                      # Skill definition and workflow
-│   ├── assets/                       # Baseline documents
+│   ├── assets/                       # Baseline documents and references
 │   │   ├── Jason_J_Garcia-RESUME.docx
-│   │   └── Jason_J_Garcia-COVERLETTER.md
+│   │   ├── Jason_J_Garcia-COVERLETTER.md
+│   │   └── LinkedIn_Best_Profile_Guide.pdf  # Best practice reference
 │   ├── references/                   # Knowledge base
 │   │   ├── user_profile.md           # Target roles, competencies, goals
 │   │   ├── xml_editing_guide.md      # XML formatting rules
+│   │   ├── linkedin_profile_optimization.md  # LinkedIn optimization & comparison
 │   │   ├── list_of_key_accomplishments.md
 │   │   ├── list_of_target_companies.md
 │   │   ├── qa_and_delivery.md
@@ -206,6 +224,8 @@ ai-assisted-job-search/
 │   │   └── networking_support.md
 │   └── scripts/                      # Automation scripts
 │       ├── prepare_resume.sh
+│       ├── create_tailored_resume.sh
+│       ├── cleanup_unpacked.sh
 │       └── verify_page_count.sh
 └── utils/                            # Packaging utilities
     ├── package_skill.py              # Creates .skill file
@@ -225,11 +245,30 @@ If you have Claude Code installed:
    ```
 
 2. Use the skill in conversation:
+
+   **For resume/cover letter:**
    ```
    /job-application-helper
 
    I'm applying to [Company] for [Role]. Here's the job description:
    [paste job description]
+
+   I need: [resume only / cover letter only / both]
+   ```
+
+   **For LinkedIn profile optimization:**
+   ```
+   /job-application-helper
+
+   Help me optimize my LinkedIn profile for [target role]
+   ```
+
+   **For LinkedIn profile comparison:**
+   ```
+   /job-application-helper
+
+   Compare my LinkedIn profile against best practices. Here's my profile PDF:
+   [attach your LinkedIn profile PDF]
    ```
 
 ### With Claude AI (Browser)
@@ -337,7 +376,11 @@ Beyond the required personalization (see above), you can further customize the s
    - Edit `references/xml_editing_guide.md` to define new section patterns
    - Adjust resume structure based on your industry norms (e.g., Education before Experience for academia)
 
-4. **Add industry-specific templates**:
+4. **Modify LinkedIn comparison reference**:
+   - Replace `assets/LinkedIn_Best_Profile_Guide.pdf` with your own ideal profile export
+   - Update comparison criteria in `references/linkedin_profile_optimization.md`
+
+5. **Add industry-specific templates**:
    - Create alternate baseline resumes for different industries
    - Add conditional logic in `SKILL.md` to select templates based on job posting
 
@@ -361,10 +404,20 @@ Beyond the required personalization (see above), you can further customize the s
 
 Beyond resume and cover letter tailoring, the skill provides:
 
+### LinkedIn Profile Support
+- **Profile Optimization**: Comprehensive guidance for all profile sections (headline, about, experience, skills, recommendations)
+- **Profile Comparison**: Systematic workflow to compare your LinkedIn profile PDF against best practice reference
+  - Structural completeness checking
+  - Content quality assessment
+  - Resume-to-profile consistency verification
+  - Gap analysis with prioritized recommendations
+- **Engagement Strategies**: Posts, following, groups, and networking best practices
+
+### Job Search Support
 - **Company Research**: Web search integration for recent company news, products, and initiatives
 - **Interview Preparation**: STAR method response crafting, format-specific prep (phone, video, onsite)
-- **Skill Gap Analysis**: Compare your qualifications against job requirements
-- **Networking Support**: LinkedIn outreach templates, cold email strategies
+- **Skill Gap Analysis**: Compare your qualifications against job requirements with actionable recommendations
+- **Networking Support**: LinkedIn connection requests, cold email templates, outreach strategies
 
 See the respective files in `references/` for detailed guidance.
 
