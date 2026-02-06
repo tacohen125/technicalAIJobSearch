@@ -4,7 +4,7 @@ set -euo pipefail
 # Copies the baseline resume and unpacks it to XML for editing.
 #
 # Usage: prepare_resume.sh <output_filename.docx> [unpacked_dir]
-#   output_filename  - Target .docx filename (e.g., Jason_Garcia_RESUME-Acme-TPM.docx)
+#   output_filename  - Target .docx filename (e.g., Jason_J_Garcia-RESUME-Acme-TPM.docx)
 #   unpacked_dir     - Directory to unpack XML into (default: unpacked/)
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

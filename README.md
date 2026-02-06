@@ -105,8 +105,8 @@ The SKILL.md file contains hard-coded references that must be updated:
 
 **Line 256-257**: Output filename pattern
 ```yaml
-- Resume filename: `Jason_Garcia_RESUME-[CompanyName]-[RoleTitle].docx`
-- Cover letter filename: `Jason_Garcia_COVERLETTER-[CompanyName]-[RoleTitle].docx`
+- Resume filename: `Jason_J_Garcia-RESUME-[CompanyName]-[RoleTitle].docx`
+- Cover letter filename: `Jason_J_Garcia-COVERLETTER-[CompanyName]-[RoleTitle].docx`
 ```
 → Update to use your name
 
@@ -198,8 +198,8 @@ Automated verification:
 ### Step 5: Delivery
 
 Files are delivered with standardized naming:
-- `Jason_Garcia_RESUME-[CompanyName]-[RoleTitle].docx`
-- `Jason_Garcia_COVERLETTER-[CompanyName]-[RoleTitle].docx`
+- `Jason_J_Garcia-RESUME-[CompanyName]-[RoleTitle].docx`
+- `Jason_J_Garcia-COVERLETTER-[CompanyName]-[RoleTitle].docx`
 
 ## Repository Structure
 

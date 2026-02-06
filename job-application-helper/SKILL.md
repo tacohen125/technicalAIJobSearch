@@ -253,8 +253,8 @@ Read `references/qa_and_delivery.md` and complete all verification and pre-deliv
 ### Step 5: Delivery
 
 **File naming and delivery**:
-- Resume filename: `Jason_Garcia_RESUME-[CompanyName]-[RoleTitle].docx`
-- Cover letter filename: `Jason_Garcia_COVERLETTER-[CompanyName]-[RoleTitle].docx`
+- Resume filename: `Jason_J_Garcia-RESUME-[CompanyName]-[RoleTitle].docx`
+- Cover letter filename: `Jason_J_Garcia-COVERLETTER-[CompanyName]-[RoleTitle].docx`
 - Copy final files to `/mnt/user-data/outputs/`
 - Use `present_files` tool to share with user
 - Provide brief summary of key changes made
