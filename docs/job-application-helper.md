@@ -414,6 +414,7 @@ The `references/xml_editing_guide.md` contains comprehensive formatting rules, p
 ## Dependencies
 
 For full functionality, the skill assumes access to:
+- [job-application-helper skill](../job-application-helper)
 - Claude Code's `docx` skill (for packing/unpacking .docx files)
 - Web search capability (for company research)
 - File system access (for reading/writing documents)
