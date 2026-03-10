@@ -45,8 +45,18 @@ A collection of Claude AI skills for comprehensive job search preparation — fr
 ## 🚀 Quick Start
 
 ### Prerequisites
-- **Claude Code CLI** installed, OR
-- **Claude.ai** account (browser-based usage)
+
+**Required:**
+- **Claude Code CLI** installed, OR **Claude.ai** account (browser-based usage)
+- **Python 3.x**
+
+**For resume tailoring (job-application-helper):**
+- **Anthropic `docx` example skill** — provides pack/unpack scripts for .docx XML editing
+  - Claude.ai: automatically available at `/mnt/skills/public/docx/`
+  - Claude Code CLI: install via the example skills marketplace, or copy `pack.py` and `unpack.py` into `job-application-helper/scripts/`
+- **`defusedxml`** Python package — required by pack/unpack scripts: `pip install defusedxml`
+- **LibreOffice** — required for page count verification (headless .docx-to-PDF conversion): `sudo apt install libreoffice` / `brew install --cask libreoffice` / [libreoffice.org](https://www.libreoffice.org/download/)
+- **`pdfinfo`** (from poppler-utils) — required for page count verification: `sudo apt install poppler-utils` / `brew install poppler`
 
 ### Installation
 
@@ -101,6 +111,7 @@ This skill contains example data and will not work without personalization.
 - [ ] Update `job-application-helper/references/list_of_key_accomplishments.md` with your achievements
 - [ ] Update `job-application-helper/references/list_of_target_companies.md` with your target companies
 - [ ] Edit `job-application-helper/SKILL.md` (lines 10, 11, 256-257) to use your name and LinkedIn URL
+- [ ] If you renamed your resume file, update the `BASELINE=` path in `job-application-helper/scripts/prepare_resume.sh` (line 12)
 
 [See detailed personalization guide →](./docs/job-application-helper.md#️-important-personalization-required)
 

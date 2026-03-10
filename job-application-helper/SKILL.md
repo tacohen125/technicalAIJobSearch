@@ -138,7 +138,7 @@ Use individual scripts for granular control:
    python3 <pack_script_path> unpacked/ [output_filename].docx --original <skill_dir>/assets/Jason_J_Garcia-RESUME.docx
    ```
 
-   The `pack_script_path` will be shown by `prepare_resume.sh`. It's typically at `/mnt/skills/public/docx/scripts/office/pack.py` (browser) or `~/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/pack.py` (CLI).
+   The `pack_script_path` will be shown by `prepare_resume.sh`. It's searched in order: `scripts/pack.py` (local), `/mnt/skills/public/docx/scripts/office/pack.py` (browser), or `~/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/pack.py` (CLI).
 
 4. **Clean up manually** (remember to do this):
    ```bash

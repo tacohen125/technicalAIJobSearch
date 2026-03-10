@@ -30,5 +30,6 @@ unpacked/
 # User-specific outputs
 outputs/
 
-.claude/skills
+.claude/
 docs/private/
+portfolio/

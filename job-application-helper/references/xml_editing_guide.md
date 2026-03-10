@@ -195,6 +195,7 @@ Copy an existing skill paragraph block (with all `<w:pPr>`, `<w:numPr>`, spacing
 4. **Keyword stuffing**: Keywords must flow naturally in context
 5. **Format deviation**: Any deviation from baseline formatting breaks professional appearance
 6. **Exceeding 2-page limit**: Always verify page count via PDF conversion before delivery. Remove less-relevant bullets rather than reducing font size or margins.
+7. **Using stdlib `xml.etree.ElementTree` to write XML**: Python's built-in `ET.write()` changes the encoding declaration and strips namespace prefixes (e.g., `w:`, `r:`), corrupting the .docx XML. The pack/unpack scripts use `defusedxml.minidom` specifically to avoid this. If you need to programmatically manipulate XML, use `defusedxml.minidom` or `lxml` — never `xml.etree.ElementTree` for writing.
 
 ## Troubleshooting
 

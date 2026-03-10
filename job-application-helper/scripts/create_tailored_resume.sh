@@ -89,12 +89,15 @@ echo ""
 echo "=== Step 3: Packing resume ==="
 
 # Find pack script
-if [ -f "/mnt/skills/public/docx/scripts/office/pack.py" ]; then
+if [ -f "${SCRIPT_DIR}/pack.py" ]; then
+    PACK_SCRIPT="${SCRIPT_DIR}/pack.py"
+elif [ -f "/mnt/skills/public/docx/scripts/office/pack.py" ]; then
     PACK_SCRIPT="/mnt/skills/public/docx/scripts/office/pack.py"
 elif [ -f "${HOME}/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/pack.py" ]; then
     PACK_SCRIPT="${HOME}/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/pack.py"
 else
     echo "ERROR: Could not find pack.py script" >&2
+    echo "Install the Anthropic 'docx' example skill, or copy pack.py into ${SCRIPT_DIR}/" >&2
     exit 1
 fi
 

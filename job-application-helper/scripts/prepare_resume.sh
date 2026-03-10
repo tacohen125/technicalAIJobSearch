@@ -12,15 +12,20 @@ SKILL_DIR="$(dirname "${SCRIPT_DIR}")"
 BASELINE="${SKILL_DIR}/assets/Jason_J_Garcia-RESUME.docx"
 
 # Find unpack script - check multiple possible locations
-if [ -f "/mnt/skills/public/docx/scripts/office/unpack.py" ]; then
+if [ -f "${SCRIPT_DIR}/unpack.py" ]; then
+    UNPACK_SCRIPT="${SCRIPT_DIR}/unpack.py"
+elif [ -f "/mnt/skills/public/docx/scripts/office/unpack.py" ]; then
     UNPACK_SCRIPT="/mnt/skills/public/docx/scripts/office/unpack.py"
 elif [ -f "${HOME}/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/unpack.py" ]; then
     UNPACK_SCRIPT="${HOME}/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/unpack.py"
 else
     echo "ERROR: Could not find unpack.py script" >&2
     echo "Searched locations:" >&2
-    echo "  - /mnt/skills/public/docx/scripts/office/unpack.py" >&2
-    echo "  - ${HOME}/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/unpack.py" >&2
+    echo "  - ${SCRIPT_DIR}/unpack.py (local)" >&2
+    echo "  - /mnt/skills/public/docx/scripts/office/unpack.py (Claude.ai)" >&2
+    echo "  - ${HOME}/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/unpack.py (Claude Code)" >&2
+    echo "" >&2
+    echo "Install the Anthropic 'docx' example skill, or copy unpack.py into ${SCRIPT_DIR}/" >&2
     exit 1
 fi
 
@@ -51,7 +56,9 @@ python3 "${UNPACK_SCRIPT}" "${OUTPUT_FILE}" "${UNPACKED_DIR}"
 echo "Ready. Edit XML at ${UNPACKED_DIR}word/document.xml, then pack with:"
 
 # Find pack script - check multiple possible locations
-if [ -f "/mnt/skills/public/docx/scripts/office/pack.py" ]; then
+if [ -f "${SCRIPT_DIR}/pack.py" ]; then
+    PACK_SCRIPT="${SCRIPT_DIR}/pack.py"
+elif [ -f "/mnt/skills/public/docx/scripts/office/pack.py" ]; then
     PACK_SCRIPT="/mnt/skills/public/docx/scripts/office/pack.py"
 elif [ -f "${HOME}/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/pack.py" ]; then
     PACK_SCRIPT="${HOME}/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/pack.py"

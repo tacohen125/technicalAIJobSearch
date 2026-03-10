@@ -122,6 +122,7 @@ Before using this skill for the first time:
 - [ ] Update `references/list_of_target_companies.md` with your target companies
 - [ ] Edit `SKILL.md` line 11 to include your LinkedIn URL
 - [ ] Edit `SKILL.md` lines 256-257 to use your name in output filenames
+- [ ] If you renamed your resume file, update `BASELINE=` in `scripts/prepare_resume.sh` (line 12)
 - [ ] (Optional) Edit `SKILL.md` line 3 to reflect your target roles/industries
 
 ## How It Works
@@ -413,11 +414,47 @@ The `references/xml_editing_guide.md` contains comprehensive formatting rules, p
 
 ## Dependencies
 
-For full functionality, the skill assumes access to:
-- [job-application-helper skill](../job-application-helper)
-- Claude Code's `docx` skill (for packing/unpacking .docx files)
-- Web search capability (for company research)
-- File system access (for reading/writing documents)
+### System Tools
+
+| Tool | Package | Purpose | Required For |
+|------|---------|---------|-------------|
+| **LibreOffice** | `libreoffice` | Headless .docx-to-PDF conversion | Page count verification (`verify_page_count.sh`) |
+| **pdfinfo** | `poppler-utils` (Linux) / `poppler` (macOS) | Extract page count from PDF | Page count verification (`verify_page_count.sh`) |
+
+**Installation:**
+```bash
+# Debian/Ubuntu
+sudo apt install libreoffice poppler-utils
+
+# macOS
+brew install --cask libreoffice && brew install poppler
+
+# Windows - install LibreOffice from https://www.libreoffice.org/download/
+# and poppler from https://github.com/ossamamehmood/Poppler-windows/releases
+```
+
+### Python Dependencies
+
+| Package | Purpose | Required For |
+|---------|---------|-------------|
+| **defusedxml** | Safe XML parsing and serialization | pack.py / unpack.py (docx XML processing) |
+
+```bash
+pip install defusedxml
+```
+
+### Claude Code Dependencies
+
+| Dependency | Purpose | How to Get It |
+|-----------|---------|---------------|
+| **Anthropic `docx` example skill** | Provides `pack.py` and `unpack.py` for .docx XML editing | Claude.ai: automatically available. Claude Code CLI: install via example skills marketplace, or copy the scripts into `scripts/` locally |
+| **Web search capability** | Company research for cover letters | Built into Claude Code and Claude.ai |
+| **File system access** | Reading/writing documents | Built into Claude Code and Claude.ai |
+
+**Note:** The scripts search for `pack.py`/`unpack.py` in this order:
+1. `scripts/` directory (local — for portability)
+2. `/mnt/skills/public/docx/scripts/office/` (Claude.ai browser sandbox)
+3. `~/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/` (Claude Code marketplace)
 
 ---
 
