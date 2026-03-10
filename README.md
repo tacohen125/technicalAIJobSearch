@@ -20,7 +20,7 @@ A collection of Claude AI skills for comprehensive job search preparation — fr
 
 **Personalization:** ⚠️ **Required** — Must customize with your documents and background
 
-[📖 Full Documentation](./docs/job-application-helper.md) | [📋 SKILL.md](./job-application-helper/SKILL.md)
+[📖 Full Documentation](./docs/job-application-helper.md) | [📋 SKILL.md](./skills/job-application-helper/SKILL.md)
 
 ---
 
@@ -38,7 +38,7 @@ A collection of Claude AI skills for comprehensive job search preparation — fr
 
 **Personalization:** ✅ **None Required** — Works out of the box
 
-[📖 Full Documentation](./docs/likert-screening-tutor.md) | [📋 SKILL.md](./likert-screening-tutor/SKILL.md)
+[📖 Full Documentation](./docs/likert-screening-tutor.md) | [📋 SKILL.md](./skills/likert-screening-tutor/SKILL.md)
 
 ---
 
@@ -79,7 +79,7 @@ I've updated my baseline resume. Run the resume-updater agent to sync all skill 
 **For resume tailoring (job-application-helper):**
 - **Anthropic `docx` example skill** — provides pack/unpack scripts for .docx XML editing
   - Claude.ai: automatically available at `/mnt/skills/public/docx/`
-  - Claude Code CLI: install via the example skills marketplace, or copy `pack.py` and `unpack.py` into `job-application-helper/scripts/`
+  - Claude Code CLI: install via the example skills marketplace, or copy `pack.py` and `unpack.py` into `skills/job-application-helper/scripts/`
 - **`defusedxml`** Python package — required by pack/unpack scripts: `pip install defusedxml`
 - **LibreOffice** — required for page count verification (headless .docx-to-PDF conversion): `sudo apt install libreoffice` / `brew install --cask libreoffice` / [libreoffice.org](https://www.libreoffice.org/download/)
 - **`pdfinfo`** (from poppler-utils) — required for page count verification: `sudo apt install poppler-utils` / `brew install poppler`
@@ -89,8 +89,8 @@ I've updated my baseline resume. Run the resume-updater agent to sync all skill 
 **Option 1: Claude Code CLI**
 ```bash
 # Copy skills to your skills directory
-cp -r job-application-helper ~/.claude/skills/
-cp -r likert-screening-tutor ~/.claude/skills/
+cp -r skills/job-application-helper ~/.claude/skills/
+cp -r skills/likert-screening-tutor ~/.claude/skills/
 
 # Copy agents to your agents directory
 mkdir -p ~/.claude/agents
@@ -100,8 +100,8 @@ cp agents/resume-updater.md ~/.claude/agents/
 **Option 2: Claude.ai Browser**
 ```bash
 # Package skills into .skill files
-python utils/package_skill.py job-application-helper
-python utils/package_skill.py likert-screening-tutor
+python utils/package_skill.py skills/job-application-helper
+python utils/package_skill.py skills/likert-screening-tutor
 
 # Then upload to claude.ai:
 # Settings → Capabilities → Skills → "+ Add" → "Upload a skill"
@@ -135,13 +135,13 @@ Give me a full 75-question timed mock assessment for Google's Hiring Assessment
 This skill contains example data and will not work without personalization.
 
 **Quick Checklist:**
-- [ ] Replace `job-application-helper/assets/Jason_J_Garcia-RESUME.docx` with your baseline resume
-- [ ] Replace `job-application-helper/assets/Jason_J_Garcia-COVERLETTER.md` with your cover letter template
-- [ ] Update `job-application-helper/references/user_profile.md` with your background
-- [ ] Update `job-application-helper/references/list_of_key_accomplishments.md` with your achievements
-- [ ] Update `job-application-helper/references/list_of_target_companies.md` with your target companies
-- [ ] Edit `job-application-helper/SKILL.md` (lines 10, 11, 256-257) to use your name and LinkedIn URL
-- [ ] If you renamed your resume file, update the `BASELINE=` path in `job-application-helper/scripts/prepare_resume.sh` (line 12)
+- [ ] Replace `skills/job-application-helper/assets/Jason_J_Garcia-RESUME.docx` with your baseline resume
+- [ ] Replace `skills/job-application-helper/assets/Jason_J_Garcia-COVERLETTER.md` with your cover letter template
+- [ ] Update `skills/job-application-helper/references/user_profile.md` with your background
+- [ ] Update `skills/job-application-helper/references/list_of_key_accomplishments.md` with your achievements
+- [ ] Update `skills/job-application-helper/references/list_of_target_companies.md` with your target companies
+- [ ] Edit `skills/job-application-helper/SKILL.md` (lines 10, 11, 256-257) to use your name and LinkedIn URL
+- [ ] If you renamed your resume file, update the `BASELINE=` path in `skills/job-application-helper/scripts/prepare_resume.sh` (line 12)
 
 [See detailed personalization guide →](./docs/job-application-helper.md#️-important-personalization-required)
 
@@ -161,33 +161,34 @@ ai-assisted-job-search/
 ├── docs/                               # Detailed documentation (outside skill folders)
 │   ├── job-application-helper.md       # Resume/cover letter skill docs
 │   └── likert-screening-tutor.md       # Behavioral screening prep docs
-├── job-application-helper/             # Resume/cover letter skill
-│   ├── SKILL.md                        # Skill definition and workflow
-│   ├── assets/                         # Baseline documents
-│   │   ├── Jason_J_Garcia-RESUME.docx
-│   │   ├── Jason_J_Garcia-COVERLETTER.md
-│   │   └── LinkedIn_Best_Profile_Guide.pdf
-│   ├── references/                     # Knowledge base
-│   │   ├── user_profile.md
-│   │   ├── xml_editing_guide.md
-│   │   ├── linkedin_profile_optimization.md
-│   │   ├── list_of_key_accomplishments.md
-│   │   ├── list_of_target_companies.md
-│   │   ├── qa_and_delivery.md
-│   │   ├── company_research.md
-│   │   ├── interview_preparation.md
-│   │   ├── skill_gap_analysis.md
-│   │   └── networking_support.md
-│   └── scripts/                        # Automation scripts
-│       ├── prepare_resume.sh
-│       ├── create_tailored_resume.sh
-│       ├── cleanup_unpacked.sh
-│       └── verify_page_count.sh
-├── likert-screening-tutor/             # Behavioral screening prep skill
-│   ├── SKILL.md                        # Skill definition and workflow
-│   └── references/                     # Question bank & scoring guide
-│       ├── question_bank.md
-│       └── scoring_guide.md
+├── skills/                             # All skill definitions
+│   ├── job-application-helper/         # Resume/cover letter skill
+│   │   ├── SKILL.md                    # Skill definition and workflow
+│   │   ├── assets/                     # Baseline documents
+│   │   │   ├── Jason_J_Garcia-RESUME.docx
+│   │   │   ├── Jason_J_Garcia-COVERLETTER.md
+│   │   │   └── LinkedIn_Best_Profile_Guide.pdf
+│   │   ├── references/                 # Knowledge base
+│   │   │   ├── user_profile.md
+│   │   │   ├── xml_editing_guide.md
+│   │   │   ├── linkedin_profile_optimization.md
+│   │   │   ├── list_of_key_accomplishments.md
+│   │   │   ├── list_of_target_companies.md
+│   │   │   ├── qa_and_delivery.md
+│   │   │   ├── company_research.md
+│   │   │   ├── interview_preparation.md
+│   │   │   ├── skill_gap_analysis.md
+│   │   │   └── networking_support.md
+│   │   └── scripts/                    # Automation scripts
+│   │       ├── prepare_resume.sh
+│   │       ├── create_tailored_resume.sh
+│   │       ├── cleanup_unpacked.sh
+│   │       └── verify_page_count.sh
+│   └── likert-screening-tutor/         # Behavioral screening prep skill
+│       ├── SKILL.md                    # Skill definition and workflow
+│       └── references/                 # Question bank & scoring guide
+│           ├── question_bank.md
+│           └── scoring_guide.md
 ├── utils/                              # Shared utilities
 │   ├── package_skill.py                # Creates .skill files for browser upload
 │   └── quick_validate.py               # Validates skill structure
@@ -205,10 +206,10 @@ Creates `.skill` files that can be uploaded to Claude.ai:
 
 ```bash
 # Package a single skill
-python utils/package_skill.py job-application-helper
+python utils/package_skill.py skills/job-application-helper
 
 # Package with custom output directory
-python utils/package_skill.py likert-screening-tutor ./dist
+python utils/package_skill.py skills/likert-screening-tutor ./dist
 ```
 
 **What it does:**
@@ -236,7 +237,7 @@ python utils/package_skill.py likert-screening-tutor ./dist
 Checks if a skill meets Claude Code requirements:
 
 ```bash
-python utils/quick_validate.py job-application-helper
+python utils/quick_validate.py skills/job-application-helper
 ```
 
 ---

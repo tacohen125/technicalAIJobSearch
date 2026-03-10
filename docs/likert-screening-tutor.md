@@ -319,7 +319,7 @@ Overthinking leads to:
 
 1. **Copy the skill to your skills directory:**
    ```bash
-   cp -r likert-screening-tutor ~/.claude/skills/
+   cp -r skills/likert-screening-tutor ~/.claude/skills/
    ```
 
 2. **Use in conversation:**
@@ -354,7 +354,7 @@ Overthinking leads to:
 1. **Package the skill:**
    ```bash
    cd /path/to/ai-assisted-job-search
-   python utils/package_skill.py likert-screening-tutor
+   python utils/package_skill.py skills/likert-screening-tutor
    ```
 
 2. **Upload to Claude.ai:**

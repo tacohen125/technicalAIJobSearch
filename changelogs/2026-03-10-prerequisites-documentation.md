@@ -25,12 +25,12 @@ A user cloned the repo and encountered the following issues:
 
 ### Scripts (code fix — local fallback for pack/unpack)
 
-**`job-application-helper/scripts/prepare_resume.sh`**
+**`skills/job-application-helper/scripts/prepare_resume.sh`**
 - Added `${SCRIPT_DIR}/unpack.py` as first search path (before Claude.ai and Claude Code marketplace paths)
 - Added `${SCRIPT_DIR}/pack.py` as first search path
 - Improved error messages to list all searched locations with labels and suggest remediation
 
-**`job-application-helper/scripts/create_tailored_resume.sh`**
+**`skills/job-application-helper/scripts/create_tailored_resume.sh`**
 - Added `${SCRIPT_DIR}/pack.py` as first search path
 - Added remediation hint to error message
 
@@ -52,12 +52,12 @@ A user cloned the repo and encountered the following issues:
   - Note documenting the pack/unpack search order
 - Added script to Quick Start personalization checklist
 
-**`job-application-helper/SKILL.md`**
+**`skills/job-application-helper/SKILL.md`**
 - Updated pack_script_path documentation to reflect new search order (local first)
 
 ### Reference (pitfall warning)
 
-**`job-application-helper/references/xml_editing_guide.md`**
+**`skills/job-application-helper/references/xml_editing_guide.md`**
 - Added Common Pitfall #7: Warning against using stdlib `xml.etree.ElementTree` for writing .docx XML
   - Root cause: `ET.write()` changes encoding declaration and strips namespace prefixes (`w:`, `r:`)
   - Recommendation: Use `defusedxml.minidom` or `lxml` instead
@@ -66,11 +66,11 @@ A user cloned the repo and encountered the following issues:
 
 | File | Type | Summary |
 |------|------|---------|
-| `job-application-helper/scripts/prepare_resume.sh` | Code | Local fallback + better errors |
-| `job-application-helper/scripts/create_tailored_resume.sh` | Code | Local fallback + better errors |
+| `skills/job-application-helper/scripts/prepare_resume.sh` | Code | Local fallback + better errors |
+| `skills/job-application-helper/scripts/create_tailored_resume.sh` | Code | Local fallback + better errors |
 | `README.md` | Docs | Prerequisites, personalization checklist |
 | `docs/job-application-helper.md` | Docs | Dependencies section, personalization checklist |
-| `job-application-helper/SKILL.md` | Docs | Pack script search order |
-| `job-application-helper/references/xml_editing_guide.md` | Ref | ET.write() pitfall warning |
+| `skills/job-application-helper/SKILL.md` | Docs | Pack script search order |
+| `skills/job-application-helper/references/xml_editing_guide.md` | Ref | ET.write() pitfall warning |
 
 > **Note:** The `.claude/skills/` copies were also updated to stay in sync but are not tracked by git.

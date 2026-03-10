@@ -1,7 +1,7 @@
 # Skill Evaluation Report: job-application-helper
 
 **Date**: 2026-02-02
-**Skill Path**: `./job-application-helper/`
+**Skill Path**: `./skills/job-application-helper/`
 **Evaluated Against**: Claude Code Skill Creator best practices
 
 ---
@@ -33,7 +33,7 @@ The `name` and `description` fields are present and well-written. The descriptio
 Clean `scripts/`, `references/`, `assets/` layout matching the expected skill anatomy. No extraneous files (no README, CHANGELOG, etc. inside the skill folder).
 
 ```
-job-application-helper/
+skills/job-application-helper/
 ├── SKILL.md
 ├── assets/
 │   ├── Jason_J_Garcia-RESUME.docx

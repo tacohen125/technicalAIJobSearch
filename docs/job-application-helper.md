@@ -49,7 +49,7 @@ This skill provides a comprehensive workflow for creating tailored resumes and c
 
 #### 1. Asset Files (Your Documents)
 
-**Location**: `job-application-helper/assets/`
+**Location**: `skills/job-application-helper/assets/`
 
 - **`Jason_J_Garcia-RESUME.docx`**: Replace with your own baseline resume
   - Use placeholder text like `[City, State]`, `[Phone]`, `[Email]`, `[LinkedIn]` for contact info
@@ -63,7 +63,7 @@ This skill provides a comprehensive workflow for creating tailored resumes and c
 
 #### 2. Reference Files (Your Background)
 
-**Location**: `job-application-helper/references/`
+**Location**: `skills/job-application-helper/references/`
 
 - **`user_profile.md`**: Update with YOUR information
   - Current role, experience level, location
@@ -82,7 +82,7 @@ This skill provides a comprehensive workflow for creating tailored resumes and c
 
 #### 3. Skill Configuration (Hard-Coded Dependencies)
 
-**Location**: `job-application-helper/SKILL.md`
+**Location**: `skills/job-application-helper/SKILL.md`
 
 The SKILL.md file contains hard-coded references that must be updated:
 
@@ -205,7 +205,7 @@ If you have Claude Code installed:
 
 1. Copy the skill folder to your skills directory:
    ```bash
-   cp -r job-application-helper ~/.claude/skills/
+   cp -r skills/job-application-helper ~/.claude/skills/
    ```
 
 2. Use the skill in conversation:
@@ -253,7 +253,7 @@ To use this skill with Claude.ai through your browser, you need to package it in
 
 2. **Run the packaging script**:
    ```bash
-   python utils/package_skill.py job-application-helper
+   python utils/package_skill.py skills/job-application-helper
    ```
 
    This will:
@@ -263,7 +263,7 @@ To use this skill with Claude.ai through your browser, you need to package it in
 
    Optional: Specify an output directory:
    ```bash
-   python utils/package_skill.py job-application-helper ./dist
+   python utils/package_skill.py skills/job-application-helper ./dist
    ```
 
 3. **Upload to Claude.ai**:
