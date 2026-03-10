@@ -42,6 +42,32 @@ A collection of Claude AI skills for comprehensive job search preparation — fr
 
 ---
 
+## 🤖 Agents
+
+### [Resume Updater](./agents/resume-updater.md)
+**Keeps the job-application-helper skill synchronized when your baseline resume changes**
+
+This Claude Code subagent automatically reviews and updates all skill documentation, reference materials, scripts, and XML editing guides whenever you modify your baseline resume. It prevents drift between your resume and the skill's knowledge base.
+
+**When to use:** After updating your baseline resume (`assets/Jason_J_Garcia-RESUME.docx`), run this agent to propagate changes across the entire skill.
+
+**Key Capabilities:**
+- Unpacks and analyzes resume XML structure for formatting changes
+- Updates `xml_editing_guide.md` with current section patterns and protected attributes
+- Synchronizes reference materials (accomplishments, user profile, skills inventory)
+- Validates all scripts against the updated baseline
+- Performs cross-referential consistency checks across all documentation
+- Generates a change log documenting what was updated
+
+**Platform:** Claude Code CLI only (agents are not supported in Claude.ai browser)
+
+**Usage:**
+```
+I've updated my baseline resume. Run the resume-updater agent to sync all skill docs.
+```
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -65,6 +91,10 @@ A collection of Claude AI skills for comprehensive job search preparation — fr
 # Copy skills to your skills directory
 cp -r job-application-helper ~/.claude/skills/
 cp -r likert-screening-tutor ~/.claude/skills/
+
+# Copy agents to your agents directory
+mkdir -p ~/.claude/agents
+cp agents/resume-updater.md ~/.claude/agents/
 ```
 
 **Option 2: Claude.ai Browser**
@@ -125,6 +155,9 @@ This skill contains example data and will not work without personalization.
 ```
 ai-assisted-job-search/
 ├── README.md                           # This file - overview of all skills
+├── agents/                             # Claude Code subagent definitions
+│   └── resume-updater.md              # Syncs skill docs after resume changes
+├── changelogs/                         # Change history
 ├── docs/                               # Detailed documentation (outside skill folders)
 │   ├── job-application-helper.md       # Resume/cover letter skill docs
 │   └── likert-screening-tutor.md       # Behavioral screening prep docs
@@ -223,6 +256,10 @@ Each skill has detailed documentation in the `docs/` folder:
   - Practice modes and usage
   - Scoring rubric and strategic principles
   - Common mistakes to avoid
+
+- **[Resume Updater Agent](./agents/resume-updater.md)**
+  - Subagent definition for keeping skill docs in sync with baseline resume
+  - Execution workflow, responsibilities, and success criteria
 
 ---
 
