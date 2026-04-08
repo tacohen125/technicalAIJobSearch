@@ -67,7 +67,7 @@ A collection of Claude AI skills for comprehensive job search preparation — fr
 
 This Claude Code subagent automatically reviews and updates all skill documentation, reference materials, scripts, and XML editing guides whenever you modify your baseline resume. It prevents drift between your resume and the skill's knowledge base.
 
-**When to use:** After updating your baseline resume (`assets/Jason_J_Garcia-RESUME.docx`), run this agent to propagate changes across the entire skill.
+**When to use:** After updating your baseline resume (`assets/Ted_Cohen-RESUME.docx`), run this agent to propagate changes across the entire skill.
 
 **Key Capabilities:**
 - Unpacks and analyzes resume XML structure for formatting changes
@@ -108,6 +108,7 @@ I've updated my baseline resume. Run the resume-updater agent to sync all skill 
 ```bash
 # Copy skills to your skills directory
 cp -r skills/job-application-helper ~/.claude/skills/
+cp -r skills/interview-study-guide ~/.claude/skills/
 cp -r skills/likert-screening-tutor ~/.claude/skills/
 
 # Copy agents to your agents directory
@@ -119,6 +120,7 @@ cp agents/resume-updater.md ~/.claude/agents/
 ```bash
 # Package skills into .skill files
 python utils/package_skill.py skills/job-application-helper
+python utils/package_skill.py skills/interview-study-guide
 python utils/package_skill.py skills/likert-screening-tutor
 
 # Then upload to claude.ai:
@@ -138,6 +140,13 @@ I'm applying to [Company] for [Role]. Here's the job description:
 I need: both resume and cover letter
 ```
 
+**Generate an interview study guide:**
+```
+/interview-study-guide
+I have an upcoming interview at [Company] for [Role]. Please generate a full study guide.
+```
+*(If you've already run job-application-helper for this role, the job description is found automatically — no paste needed.)*
+
 **Practice for behavioral assessment:**
 ```
 /likert-screening-tutor
@@ -153,8 +162,8 @@ Give me a full 75-question timed mock assessment for Google's Hiring Assessment
 This skill contains example data and will not work without personalization.
 
 **Quick Checklist:**
-- [ ] Replace `skills/job-application-helper/assets/Jason_J_Garcia-RESUME.docx` with your baseline resume
-- [ ] Replace `skills/job-application-helper/assets/Jason_J_Garcia-COVERLETTER.md` with your cover letter template
+- [ ] Replace `skills/job-application-helper/assets/Ted_Cohen-RESUME.docx` with your baseline resume
+- [ ] Replace `skills/job-application-helper/assets/Ted_Cohen-COVERLETTER.md` with your cover letter template
 - [ ] Update `skills/job-application-helper/references/user_profile.md` with your background
 - [ ] Update `skills/job-application-helper/references/list_of_key_accomplishments.md` with your achievements
 - [ ] Update `skills/job-application-helper/references/list_of_target_companies.md` with your target companies
@@ -162,6 +171,9 @@ This skill contains example data and will not work without personalization.
 - [ ] If you renamed your resume file, update the `BASELINE=` path in `skills/job-application-helper/scripts/prepare_resume.sh` (line 12)
 
 [See detailed personalization guide →](./docs/job-application-helper.md#️-important-personalization-required)
+
+### Interview Study Guide — **NO CUSTOMIZATION NEEDED**
+✅ Automatically reads from `job-application-helper/references/user_profile.md` — works once job-application-helper is personalized
 
 ### Likert Screening Tutor — **NO CUSTOMIZATION NEEDED**
 ✅ Works out of the box
@@ -171,20 +183,23 @@ This skill contains example data and will not work without personalization.
 ## 📁 Repository Structure
 
 ```
-ai-assisted-job-search/
+technicalAIJobSearch/
 ├── README.md                           # This file - overview of all skills
 ├── agents/                             # Claude Code subagent definitions
 │   └── resume-updater.md              # Syncs skill docs after resume changes
 ├── changelogs/                         # Change history
 ├── docs/                               # Detailed documentation (outside skill folders)
 │   ├── job-application-helper.md       # Resume/cover letter skill docs
+│   ├── interview-study-guide.md        # Interview study guide skill docs
 │   └── likert-screening-tutor.md       # Behavioral screening prep docs
 ├── skills/                             # All skill definitions
 │   ├── job-application-helper/         # Resume/cover letter skill
 │   │   ├── SKILL.md                    # Skill definition and workflow
 │   │   ├── assets/                     # Baseline documents
-│   │   │   ├── Jason_J_Garcia-RESUME.docx
-│   │   │   ├── Jason_J_Garcia-COVERLETTER.md
+│   │   │   ├── Ted_Cohen-RESUME.docx
+│   │   │   ├── Ted_Cohen-COVERLETTER.md
+│   │   │   ├── Ted_Cohen-COVERLETTER.docx
+│   │   │   ├── 260316-Linkedin-Profile.pdf
 │   │   │   └── LinkedIn_Best_Profile_Guide.pdf
 │   │   ├── references/                 # Knowledge base
 │   │   │   ├── user_profile.md
@@ -199,9 +214,15 @@ ai-assisted-job-search/
 │   │   │   └── networking_support.md
 │   │   └── scripts/                    # Automation scripts
 │   │       ├── prepare_resume.sh
+│   │       ├── prepare_cover_letter.sh
 │   │       ├── create_tailored_resume.sh
 │   │       ├── cleanup_unpacked.sh
-│   │       └── verify_page_count.sh
+│   │       ├── verify_page_count.sh
+│   │       ├── pack.py
+│   │       ├── unpack.py
+│   │       └── para_utils.py
+│   ├── interview-study-guide/          # Technical interview study guide skill
+│   │   └── SKILL.md                    # Skill definition and workflow
 │   └── likert-screening-tutor/         # Behavioral screening prep skill
 │       ├── SKILL.md                    # Skill definition and workflow
 │       └── references/                 # Question bank & scoring guide
@@ -244,7 +265,7 @@ python utils/package_skill.py skills/likert-screening-tutor ./dist
 ✅ Skill validation passed
 
   Added: job-application-helper/SKILL.md
-  Added: job-application-helper/assets/Jason_J_Garcia-RESUME.docx
+  Added: job-application-helper/assets/Ted_Cohen-RESUME.docx
   [... more files ...]
 
 ✅ Successfully packaged skill to: job-application-helper.skill
@@ -269,6 +290,11 @@ Each skill has detailed documentation in the `docs/` folder:
   - Personalization guide
   - Advanced customization options
   - Technical details (LPS/ATS optimization, XML editing)
+
+- **[Interview Study Guide Documentation](./docs/interview-study-guide.md)**
+  - Study guide structure and section descriptions
+  - Automatic job description resolution from outputs folder
+  - Shared dependencies with job-application-helper
 
 - **[Likert Screening Tutor Documentation](./docs/likert-screening-tutor.md)**
   - Assessment background and format
@@ -299,7 +325,6 @@ Contributions welcome! Areas for improvement:
 - Expanded strategic guidance
 
 **New skills:**
-- Technical interview preparation (coding, system design)
 - Salary negotiation advisor
 - Career transition planner
 - Networking outreach templates
@@ -322,7 +347,7 @@ MIT License - Feel free to adapt these skills for your own job search needs.
 ## 🎯 Roadmap
 
 **Planned Skills:**
-- [ ] Technical interview prep (LeetCode, system design)
+- [x] Technical interview prep → delivered as `interview-study-guide`
 - [ ] Salary negotiation coach
 - [ ] Career transition planner
 - [ ] Networking outreach generator
@@ -330,9 +355,10 @@ MIT License - Feel free to adapt these skills for your own job search needs.
 
 **Enhancements:**
 - [ ] job-application-helper: Add more industry templates
+- [ ] interview-study-guide: Add .docx output generation natively within the skill workflow
 - [ ] likert-screening-tutor: Expand question bank to 200+ questions
 - [ ] Integration between skills (e.g., use interview prep insights in resume tailoring)
 
 ---
 
-**Note:** The job-application-helper skill contains example data specific to the original author. You must personalize it with your own documents and background before use. See the [personalization guide](./docs/job-application-helper.md#️-important-personalization-required) for details.
+**Note:** The job-application-helper skill contains data specific to the author. You must personalize it with your own documents and background before use. The interview-study-guide skill works automatically once job-application-helper is personalized. See the [personalization guide](./docs/job-application-helper.md#️-important-personalization-required) for details.
