@@ -7,6 +7,16 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKILL_DIR="$(dirname "${SCRIPT_DIR}")"
 
+# Find Python executable (python3 maps to Windows Store stub on some Windows installs)
+if command -v python3 >/dev/null 2>&1 && python3 -c "import sys; sys.exit(0)" 2>/dev/null; then
+    PYTHON="python3"
+elif command -v python >/dev/null 2>&1 && python -c "import sys; sys.exit(0)" 2>/dev/null; then
+    PYTHON="python"
+else
+    echo "ERROR: No working Python interpreter found in PATH" >&2
+    exit 1
+fi
+
 # Parse arguments
 OUTPUT_FILE=""
 KEEP_UNPACKED=0
@@ -88,7 +98,7 @@ read -r
 echo ""
 echo "=== Step 3: Packing resume ==="
 
-# Find pack script
+# Find pack script - check local scripts/ first, then external locations
 if [ -f "${SCRIPT_DIR}/pack.py" ]; then
     PACK_SCRIPT="${SCRIPT_DIR}/pack.py"
 elif [ -f "/mnt/skills/public/docx/scripts/office/pack.py" ]; then
@@ -97,11 +107,10 @@ elif [ -f "${HOME}/.claude/plugins/marketplaces/anthropic-agent-skills/skills/do
     PACK_SCRIPT="${HOME}/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/pack.py"
 else
     echo "ERROR: Could not find pack.py script" >&2
-    echo "Install the Anthropic 'docx' example skill, or copy pack.py into ${SCRIPT_DIR}/" >&2
     exit 1
 fi
 
-python3 "${PACK_SCRIPT}" "${UNPACKED_DIR}" "${OUTPUT_FILE}"
+"${PYTHON}" "${PACK_SCRIPT}" "${UNPACKED_DIR}" "${OUTPUT_FILE}"
 
 # Step 4: Verify page count (unless skipped)
 if [ $NO_VERIFY -eq 0 ]; then

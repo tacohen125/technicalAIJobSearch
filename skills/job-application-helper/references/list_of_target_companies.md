@@ -3,26 +3,24 @@
 - Nvidia
 - Meta
 - Amazon
-- Netflix
-- Figma
-- Northrop Grumman
+- Intel
+- AMD
+- IonQ
+- KLA
+- Microsoft
 - Raytheon
-- Boeing
-- Lockheed Martin
-- Anthropic
-- Anduril
-- Hugging Face
-- Whatnot
+- Applied Materials
+- Analog Devices
+- Cisco
+- IBM
 - Apple
-- Toast
-- Stripe
-- Dune
-- Overland AI
-- Zillow
-- Instacart
-- Fluidstack
-- DoorDash
-- Waymo
-- Google
-- Digital Ocean
-- OpenAI
+- Samsung
+- Lightmatter
+- Helion
+- PsiQuantum
+- imec
+- Beacon Photonics
+- HyperLight
+- QuEra Computing Inc.
+- Teradyne
+- Analog Photonics

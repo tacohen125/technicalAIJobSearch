@@ -24,7 +24,25 @@ A collection of Claude AI skills for comprehensive job search preparation — fr
 
 ---
 
-### 2. [Likert Screening Tutor](./docs/likert-screening-tutor.md)
+### 2. [Interview Study Guide](./docs/interview-study-guide.md)
+**Generates comprehensive, role-specific technical interview study guides**
+
+**Key Features:**
+- ✅ Deep-dive technical sections on the role's core technologies (physics, process flows, failure modes)
+- ✅ Explicit mapping of user's background to each job requirement
+- ✅ Interview Q&A frameworks grounded in the user's actual experience
+- ✅ Verified references with study-priority ratings (web-researched)
+- ✅ Quick-fire facts table and day-before checklist
+
+**Best For:** Research Scientist, Metrology Engineer, and Integration Engineer roles in photonics, semiconductors, and quantum technology
+
+**Personalization:** ✅ **None Required** — Reads from job-application-helper's user_profile.md automatically
+
+[📖 Full Documentation](./docs/interview-study-guide.md) | [📋 SKILL.md](./skills/interview-study-guide/SKILL.md)
+
+---
+
+### 3. [Likert Screening Tutor](./docs/likert-screening-tutor.md)
 **Prepares candidates for Likert-scale behavioral screenings (Google Hiring Assessment format)**
 
 **Key Features:**

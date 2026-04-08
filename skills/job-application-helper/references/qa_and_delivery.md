@@ -8,11 +8,15 @@
 
 ## Page Count Verification
 
-**MANDATORY - DO THIS FIRST:**
+**NOTE: The baseline resume renders as 3 pages in LibreOffice.** `verify_page_count.sh` will always report 3 pages and is not a reliable gate. Use char count instead:
+
 ```bash
-bash scripts/verify_page_count.sh [resume_filename].docx
+python scripts/para_utils.py chars unpacked/word/document.xml
 ```
-This converts to PDF, checks the page count, and exits non-zero if not exactly 2 pages. If it fails, reduce content before proceeding.
+
+Keep the modified resume within ~200 chars of the baseline (7679 chars). If over budget, follow the Content Reduction Strategy in `references/xml_editing_guide.md` — starting with proactive publication cuts.
+
+`verify_page_count.sh` is still useful for catching gross overflows (e.g., 4+ pages), but a "3 pages" result is expected and not a failure.
 
 ## Content Reduction Priority
 

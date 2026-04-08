@@ -27,8 +27,10 @@ Thumbs.db
 unpacked/
 *.skill
 
-# User-specific outputs
+# User-specific outputs (all application output folders)
 outputs/
+skills/job-application-helper/assets/outputs/
+skills/interview-study-guide/assets/outputs/
 
 .claude/
 docs/private/
