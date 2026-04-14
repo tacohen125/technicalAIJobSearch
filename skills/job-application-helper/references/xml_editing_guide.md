@@ -141,14 +141,19 @@ Only modify text content within `<w:t>` tags. When `<w:t xml:space="preserve">` 
 
 ## Page Count — Critical Notes
 
-**The baseline resume renders as 3 pages in LibreOffice.** `verify_page_count.sh` uses LibreOffice and will always fail. Do not use it as a pass/fail gate. Use char count instead:
+**The baseline resume renders as 3 pages in LibreOffice AND in Word.** `verify_page_count.sh` works correctly — always run it after packing. The 2-page target must be achieved by cutting content from the baseline.
+
+**Verified 2-page char range: 6968–7430 chars.** Char count is a rough guide only — line wrapping matters as much as total chars. Use char count as a pre-check, but always run verify_page_count.sh as the final gate:
+
+**Single-line bullet rule**: Experience bullets (non-list paragraphs) must stay under ~110 chars to render as 1 line. Bullets in the 113–158 char range wrap to 2 lines, adding significant vertical space. Each extra wrap costs one line (~14pt). Four extra wraps = ~56pt ≈ pushed-to-3-page territory even when total char count looks safe. Always check the lengths of paras 19, 20, 24, 25, 26 — these are the most common overflow points.
 
 ```bash
 python scripts/para_utils.py chars unpacked/word/document.xml
-# Baseline = 7679 chars. Keep modified version within ~200 chars of baseline.
+# Baseline = 7679 chars (3 pages). Target: ≤7400 chars for 2 pages.
+# Do NOT use "within ±200 of baseline" — baseline is 3 pages, not 2.
 ```
 
-**Publications must be cut proactively, not as a last resort.** Because the baseline already occupies nearly the full 2-page budget in Word, any content additions (new bullets, longer bullets) will overflow unless publications are trimmed at the start of every tailoring job. Do this before writing experience bullets:
+**Publications must be cut proactively, not as a last resort.** The baseline is already a 3-page document. Tailored resumes must cut enough content to reach 2 pages (target ≤7400 chars). Cut publications first, then bullets from older/less-relevant roles. Do this before writing experience bullets:
 
 1. Remove non-first-author publications unrelated to the target role (e.g., batteries paper for optics role)
 2. Always keep: patent application, all first-author publications

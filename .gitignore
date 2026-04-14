@@ -32,6 +32,10 @@ outputs/
 skills/job-application-helper/assets/outputs/
 skills/interview-study-guide/assets/outputs/
 
+# Behavioral story optimization — personal content, not committed
+skills/behavioral-story-optimization/assets/rawStorySummary.md
+skills/behavioral-story-optimization/targettedSummaries.md
+
 .claude/
 docs/private/
 portfolio/

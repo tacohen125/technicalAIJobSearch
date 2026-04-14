@@ -340,8 +340,8 @@ mkdir -p "${FOLDER}"
 **Steps**:
 ```bash
 mkdir -p assets/outputs/[YYMMDD]-[CompanyName]-[RoleTitle]
-cp Ted_Cohen-RESUME-[CompanyName]-[RoleTitle].docx assets/outputs/[YYMMDD]-[CompanyName]-[RoleTitle]/
-cp Ted_Cohen-COVERLETTER-[CompanyName]-[RoleTitle].docx assets/outputs/[YYMMDD]-[CompanyName]-[RoleTitle]/
+mv Ted_Cohen-RESUME-[CompanyName]-[RoleTitle].docx assets/outputs/[YYMMDD]-[CompanyName]-[RoleTitle]/
+mv Ted_Cohen-COVERLETTER-[CompanyName]-[RoleTitle].docx assets/outputs/[YYMMDD]-[CompanyName]-[RoleTitle]/
 # Write job_description.md with the job description text
 ```
 
