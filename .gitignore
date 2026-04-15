@@ -25,6 +25,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 unpacked/
+unpacked_*/
 *.skill
 
 # User-specific outputs (all application output folders)

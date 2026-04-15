@@ -123,9 +123,15 @@ This orchestrator handles preparation, editing, packing, verification, and autom
 
 **Option B: Manual workflow (for debugging)**
 
+> ⚠️ **Existing output files**: If the file already exists in `assets/outputs/`, do NOT use `prepare_resume.sh` or `create_tailored_resume.sh` — both unconditionally overwrite the target with the baseline, destroying prior edits. Instead, unpack directly:
+> ```bash
+> python scripts/unpack.py assets/outputs/[FOLDER]/[FILENAME].docx [unpacked_dir]
+> ```
+> Only use the prepare/create scripts when starting a brand-new tailored resume for the first time.
+
 Use individual scripts for granular control:
 
-1. **Copy and unpack the baseline resume**:
+1. **Copy and unpack the baseline resume** (new files only — see warning above):
    ```bash
    bash scripts/prepare_resume.sh [output_filename].docx [unpacked_dir]
    ```
@@ -193,7 +199,6 @@ This requirement takes precedence over all other optimizations. If keyword densi
    - Reorder by relevance: most relevant first
    - Keep accomplishment titles consistent
    - Each accomplishment has first few, most impactful words in bold, rest regular
-   - Use bullet formatting
    - Avoid including responsibility and excessive details here. That content should be included in the experience section
    - Inject keywords naturally while maintaining truthfulness
    - **No recycling rule**: Each KA must describe a distinct outcome not already covered by an experience bullet. If a KA and an experience bullet describe the same work using the same metrics or phrasing, rewrite one of them. The KA should capture a broader impact or a different angle, not restate the bullet. When in doubt, use an accomplishment from `references/list_of_key_accomplishments.md` rather than constructing a new one from experience bullets.

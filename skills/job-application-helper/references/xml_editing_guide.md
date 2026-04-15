@@ -235,6 +235,18 @@ body.insert(idx, pb_para)
 
 **When NOT to add**: Do not add page breaks preemptively. Only insert where a header would otherwise be orphaned.
 
+## Working on an Existing Output File
+
+**NEVER run `prepare_resume.sh` or `create_tailored_resume.sh` on a file that already exists in `assets/outputs/`.** Both scripts unconditionally overwrite the target file with the baseline before unpacking, destroying any prior edits.
+
+When the user asks you to modify, update, or add to an existing tailored resume, unpack it directly:
+
+```bash
+python scripts/unpack.py assets/outputs/[FOLDER]/[FILENAME].docx unpacked/
+```
+
+Then edit `unpacked/word/document.xml` and pack back normally. Never use the prepare/create scripts on existing output files.
+
 ## Preferred Editing Approach: para_utils.py
 
 **Always use `scripts/para_utils.py` for editing.** It is reliable, index-based, and avoids the run-fragmentation problem (where Word splits one word like "Owned" into `<w:t>Own</w:t>` + `<w:t>ed</w:t>` across separate runs, breaking fragment-search approaches).
