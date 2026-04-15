@@ -35,7 +35,7 @@ If more than ~2 blank lines remain at the bottom of page 2, add content to fill 
 2. **Add an experience bullet**: Add the next most-relevant bullet from `references/user_profile.md` > Complete Experience Bullets for the most relevant role, keeping it under 110 chars.
 3. **Expand a trimmed bullet**: Slightly lengthen a bullet that was shortened aggressively, up to but not exceeding 110 chars.
 
-A char count near the bottom of the range (6968–7100) is a signal that a gap likely exists. Target **7200–7350 chars** to use the page fully.
+A char count near the bottom of the range (6970–7100) is a signal that a gap likely exists. Target **7200–7350 chars** to use the page fully.
 
 ## Minimum Bullets Rule
 
