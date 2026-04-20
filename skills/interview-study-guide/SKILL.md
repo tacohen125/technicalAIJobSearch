@@ -269,8 +269,16 @@ Example: `IonQ_TFLN_Interview_Study_Guide.md`
 
 **Also save the job description** as `job_description.md` in the same folder if not already present.
 
+**Convert to Word document** by running the conversion script immediately after saving the markdown:
+
+```
+python ../interview-study-guide/assets/md_to_docx.py "[path/to/StudyGuide.md]"
+```
+
+This produces a `.docx` with the same base filename in the same folder. The script requires `python-docx` (already installed). If the script errors, note the failure but do not block delivery — the markdown file is the primary artifact.
+
 After saving, provide the user with:
-1. The file path to the saved study guide
+1. The file paths to both the `.md` and `.docx` versions
 2. A brief summary of study gaps identified
 3. The top 3 most important references to read first
 

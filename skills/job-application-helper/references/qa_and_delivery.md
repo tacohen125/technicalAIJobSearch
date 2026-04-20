@@ -11,19 +11,30 @@
 
 ## Page Count Verification
 
-**NOTE: The baseline resume renders as 3 pages in LibreOffice.** `verify_page_count.sh` will always report 3 pages and is not a reliable gate. Use char count instead:
+**MANDATORY: Run `verify_page_count.sh` on every resume before delivery. Do not skip this step. Do not delegate it to the user.**
+
+```bash
+cd /c/Users/Ted/.claude/skills/job-application-helper
+bash scripts/verify_page_count.sh assets/outputs/[FOLDER]/[FILENAME].docx 2
+```
+
+- **PASS** → proceed to delivery
+- **FAIL (3 pages)** → cut content per `xml_editing_guide.md` > Content Reduction Strategy and re-run
+- **ERROR (LibreOffice/pdfinfo not found)** → fall back to char count (see below) and flag the tool issue to the user
+
+**Caveat:** LibreOffice may render a few lines differently than Word, so an LO "PASS" is not a guarantee. After you get a PASS, also check char count and bullet lengths as secondary guards. Still tell the user to do a final spot-check in Word before submitting — but that is a secondary step, not the primary verification.
+
+**NOTE on the baseline:** The *baseline* resume is intentionally 3 pages (all content included). `verify_page_count.sh` will always report 3 for the baseline. Run it only on the packed tailored output in `assets/outputs/`.
+
+**Char count fallback (use only if script unavailable):**
 
 ```bash
 python scripts/para_utils.py chars unpacked/word/document.xml
 ```
 
-**Char count is a rough proxy only — always tell the user to open the docx in Word and confirm exactly 2 pages before submitting.** Do not consider delivery complete until the user has confirmed the page count. A resume at 7400 chars can still render as 3 pages in Word if bullets wrap to 2 lines.
-
 **Target char range: 7200–7350 chars.** Stay away from the 7430 ceiling — layout variance and line wrapping can push a borderline resume to 3 pages.
 
 **Single-line bullet rule**: Keep all experience bullets under ~110 chars. Bullets in the 113–158 char range wrap to 2 lines; each wrap costs ~14pt of vertical space. Four extra wraps ≈ 56pt ≈ enough to push a borderline resume to 3 pages.
-
-`verify_page_count.sh` is still useful for catching gross overflows (e.g., 4+ pages), but a "3 pages" result is expected and not a failure.
 
 ## Page Gap Check
 
@@ -88,7 +99,7 @@ Before presenting materials, verify:
 
 Complete this checklist BEFORE delivering files to the user:
 
-- [ ] **PAGE COUNT: Instruct user to open docx in Word and confirm exactly 2 pages**
+- [ ] **PAGE COUNT: Run `verify_page_count.sh` and confirm PASS (2 pages). Fix and re-run if FAIL. Then instruct user to spot-check in Word.**
 - [ ] **CHAR COUNT: Total chars in target range 7200–7350 (run `para_utils.py chars`)**
 - [ ] **BULLET LENGTH: All experience bullets ≤110 chars (run `para_utils.py list` and check)**
 - [ ] **MIN BULLETS: Every experience role has ≥3 bullets**

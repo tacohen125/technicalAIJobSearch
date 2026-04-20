@@ -57,7 +57,7 @@
 - Studied the properties of perovskite nanocrystals and designed custom polymer composites to facilitate integration of these emitters for solar and electrically active photonic integrated circuit applications.
 - Developed sub-micron inkjet printing process to place colloidal nanocrystal on nanophotonic cavities.
 - Designed quantum dot polymer composites for LED phosphors and built test systems to verify stability.
-- Led long-horizon, milestone-driven research programs, preparing reports and presenting to internal and external stakeholders for a NSF MRSEC ($14 million) and a NSF STC ($22 million).
+- Led long-horizon, milestone-driven research programs, preparing reports and presenting to internal and external stakeholders for a NSF MRSEC ($14 million) and a NSF STC ($13 million).
 - Synthesized and processed photosensitive nanoparticles and polymers using Schenk line techniques.
 
 ## Career Goals
