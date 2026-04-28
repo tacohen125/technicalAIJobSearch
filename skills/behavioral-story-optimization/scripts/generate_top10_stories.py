@@ -23,8 +23,11 @@ Other commands:
     python scripts/generate_top10_stories.py "IonQ" --dry-run
 
 Output:
-    Ted_Cohen-Top10BehavioralStories-[CompanyName]-[RoleTitle].md
+    Ted_Cohen-Top10BehavioralStories-[CompanyName]-[RoleTitle].docx
     Saved to: skills/job-application-helper/assets/outputs/[matched-folder]/
+
+Requires:
+    pip install python-docx
 
 Selection JSON schema (pass to --write):
     {
@@ -51,12 +54,20 @@ import json
 import os
 import re
 import sys
+from datetime import date
 
 # Ensure UTF-8 output on Windows terminals that default to cp1252
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
+try:
+    from docx import Document
+    from docx.shared import Pt
+except ImportError:
+    print("ERROR: python-docx is required. Install with: pip install python-docx", file=sys.stderr)
+    sys.exit(1)
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -183,76 +194,104 @@ def print_context(job_description: str, stories: list[dict], folder_name: str) -
 
 
 # ---------------------------------------------------------------------------
-# Document generation
+# Word document generation
 # ---------------------------------------------------------------------------
 
-def build_document(
+def _add_inline_bold_runs(para, text: str) -> None:
+    """Add runs to a paragraph, converting **text** markers to bold runs."""
+    parts = re.split(r"(\*\*[^*]+\*\*)", text)
+    for part in parts:
+        if part.startswith("**") and part.endswith("**") and len(part) > 4:
+            para.add_run(part[2:-2]).bold = True
+        elif part:
+            para.add_run(part)
+
+
+def _add_story_block_to_doc(doc: "Document", rank: int, title: str, full_block: str) -> None:
+    """Parse a markdown STAR block and append it to the Word document."""
+    doc.add_heading(f"{rank}. {title}", level=3)
+
+    for line in full_block.split("\n"):
+        # Skip the ### heading line — already added above
+        if line.startswith("### "):
+            continue
+
+        stripped = line.strip()
+        if not stripped:
+            continue
+
+        if stripped.startswith("- "):
+            p = doc.add_paragraph(style="List Bullet")
+            _add_inline_bold_runs(p, stripped[2:])
+        else:
+            p = doc.add_paragraph()
+            _add_inline_bold_runs(p, stripped)
+
+
+def build_docx(
     selection: dict,
     stories_by_title: dict[str, dict],
     company: str,
     role: str,
     folder_name: str,
-) -> str:
-    """Assemble the full markdown reference document."""
+) -> "Document":
+    """Assemble the top 10 reference sheet as a Word document."""
     selected = sorted(selection["stories"], key=lambda s: s["rank"])
     g14 = selection.get("group_1_4_label", "Core role fit")
     g58 = selection.get("group_5_8_label", "Technical rigor & problem solving")
     g910 = selection.get("group_9_10_label", "Judgment & leadership")
 
     role_display = role.replace("-", " ") if role else folder_name
-    today = _today_str()
 
-    lines = [
-        f"# {company} — Top 10 Behavioral Anchor Stories",
-        f"## {role_display} | Interview Reference Sheet",
-        f"### Prepared {today}",
-        "",
-        "---",
-        "",
-        "## Quick Reference Table",
-        "",
-        "| # | Anchor Story | Career Stage | Primary Attributes | Strong For Questions About… |",
-        "|---|---|---|---|---|",
-    ]
+    doc = Document()
+
+    # Title block
+    doc.add_heading(f"{company} — Top 10 Behavioral Anchor Stories", level=1)
+    doc.add_heading(f"{role_display}  |  Interview Reference Sheet", level=2)
+    doc.add_heading(f"Prepared {_today_str()}", level=3)
+
+    # Quick Reference Table
+    doc.add_heading("Quick Reference Table", level=2)
+    table = doc.add_table(rows=1, cols=5)
+    table.style = "Table Grid"
+
+    hdr = table.rows[0].cells
+    for i, h in enumerate(["#", "Anchor Story", "Career Stage", "Primary Attributes", "Strong For Questions About…"]):
+        run = hdr[i].paragraphs[0].add_run(h)
+        run.bold = True
 
     for s in selected:
-        lines.append(
-            f"| {s['rank']} | {s['short_name']} "
-            f"| {s['career_stage']} "
-            f"| {s['primary_attributes']} "
-            f"| {s['strong_for']} |"
-        )
+        row = table.add_row().cells
+        row[0].text = str(s["rank"])
+        row[1].text = s["short_name"]
+        row[2].text = s["career_stage"]
+        row[3].text = s["primary_attributes"]
+        row[4].text = s["strong_for"]
 
-    lines += [
-        "",
-        f"**Stories 1–4** → {g14}  ",
-        f"**Stories 5–8** → {g58}  ",
-        f"**Stories 9–10** → {g910}",
-        "",
-        "---",
-        "",
-        "## Story Details",
-        "",
-    ]
+    # Group labels
+    doc.add_paragraph()
+    for stories_range, label in [("1–4", g14), ("5–8", g58), ("9–10", g910)]:
+        p = doc.add_paragraph()
+        p.add_run(f"Stories {stories_range}").bold = True
+        p.add_run(f" → {label}")
+
+    # Story details
+    doc.add_heading("Story Details", level=2)
 
     for s in selected:
         title = s["title"]
         story = stories_by_title.get(title)
         if story:
-            block = re.sub(r"^### ", f"### {s['rank']}. ", story["full_block"], count=1)
-            lines.append(block)
+            _add_story_block_to_doc(doc, s["rank"], title, story["full_block"])
         else:
-            lines.append(f"### {s['rank']}. {title}")
-            lines.append("*(Story block not found — check targettedSummaries.md)*")
-        lines.append("")
-        lines.append("---")
-        lines.append("")
+            doc.add_heading(f"{s['rank']}. {title}", level=3)
+            doc.add_paragraph("(Story block not found — check targettedSummaries.md)")
+        doc.add_paragraph()
 
-    return "\n".join(lines)
+    return doc
 
 
 def _today_str() -> str:
-    from datetime import date
     d = date.today()
     return d.strftime("%B %d, %Y").replace(" 0", " ")
 
@@ -313,7 +352,7 @@ def main() -> None:
         description=(
             "Generate a top 10 behavioral stories doc for a job interview.\n\n"
             "Default (no flags): print context for Claude to read and select from.\n"
-            "--write '<json>': write the document using Claude's selection."
+            "--write '<json>': write the .docx document using Claude's selection."
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -337,7 +376,7 @@ def main() -> None:
         metavar="JSON",
         help=(
             "Selection JSON string (or '-' to read from stdin). "
-            "Writes the output document to the job's output folder."
+            "Writes the output .docx to the job's output folder."
         ),
     )
     args = parser.parse_args()
@@ -368,7 +407,7 @@ def main() -> None:
             print(f"  [{s['section']}] {s['title']}")
         return
 
-    # --write: accept selection JSON and write document
+    # --write: accept selection JSON and write .docx
     if args.write is not None:
         folder_name, folder_path, _, stories = resolve(args.job)
 
@@ -393,17 +432,16 @@ def main() -> None:
 
         stories_by_title = {s["title"]: s for s in stories}
         company, role = parse_folder_name(folder_name)
-        document = build_document(selection, stories_by_title, company, role, folder_name)
+        doc = build_docx(selection, stories_by_title, company, role, folder_name)
 
         out_filename = f"Ted_Cohen-Top10BehavioralStories-{company}"
         if role:
             role_slug = re.sub(r"\s+", "", role)
             out_filename += f"-{role_slug}"
-        out_filename += ".md"
+        out_filename += ".docx"
         out_path = os.path.join(folder_path, out_filename)
 
-        with open(out_path, "w", encoding="utf-8") as f:
-            f.write(document)
+        doc.save(out_path)
 
         selected = sorted(selection["stories"], key=lambda s: s["rank"])
         print(f"Written: {out_path}")

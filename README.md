@@ -121,7 +121,7 @@ I've updated my baseline resume. Run the resume-updater agent to sync all skill 
 - **`pdfinfo`** (from poppler-utils) — optional, for page count verification: `sudo apt install poppler-utils` / `brew install poppler`
 
 **For behavioral story optimization:**
-- **Anthropic API key** — required by `generate_summaries.py` and `story_watcher.py` for STAR summary generation
+- **Anthropic API key** — required by `story_watcher.py` for batch STAR summary generation (not needed when using the skill directly)
 
 ### Installation
 
@@ -212,8 +212,7 @@ This skill contains example data and will not work without personalization.
 
 ### Behavioral Story Optimization — **MUST CUSTOMIZE**
 - [ ] Populate `skills/behavioral-story-optimization/assets/rawStorySummary.md` with your STAR stories (excluded from version control)
-- [ ] Set `ANTHROPIC_API_KEY` environment variable for summary generation
-- [ ] Run `python scripts/generate_summaries.py` or `python scripts/story_watcher.py --once` to generate `targettedSummaries.md`
+- [ ] Invoke `/behavioral-story-optimization` and ask Claude to update summaries, OR run `python scripts/story_watcher.py --once` (requires `ANTHROPIC_API_KEY`) to generate `targettedSummaries.md`
 
 [See detailed documentation →](./docs/behavioral-story-optimization.md)
 
@@ -277,9 +276,7 @@ technicalAIJobSearch/
 │       │   ├── rawStorySummary.md      # Raw story notes (gitignored)
 │       │   └── processed_stories.json  # Watcher state file
 │       └── scripts/
-│           ├── generate_summaries.py   # Bulk regeneration from raw stories
-│           ├── story_watcher.py        # Incremental watcher for new stories
-│           └── generate_top10_stories.py # Role-specific top 10 selector
+│           └── story_watcher.py        # Optional: batch-process new stories via API
 ├── utils/                              # Shared utilities
 │   ├── package_skill.py                # Creates .skill files for browser upload
 │   └── quick_validate.py               # Validates skill structure

@@ -12,9 +12,8 @@ synchronized between a raw notes file and a compressed, interview-ready summarie
 | `skills/behavioral-story-optimization/assets/rawStorySummary.md` | Source of truth — raw story notes organized by behavioral question category |
 | `skills/behavioral-story-optimization/targettedSummaries.md` | Output — compressed STAR summaries ready for interview use |
 | `skills/behavioral-story-optimization/assets/processed_stories.json` | State file — tracks which raw stories have already been summarized |
-| `skills/behavioral-story-optimization/scripts/generate_summaries.py` | Bulk generator — regenerates all summaries from scratch |
-| `skills/behavioral-story-optimization/scripts/story_watcher.py` | Incremental watcher — detects and summarizes new stories automatically |
-| `skills/behavioral-story-optimization/scripts/generate_top10_stories.py` | Role-specific selector — picks the top 10 stories for a given job interview |
+| `skills/behavioral-story-optimization/scripts/story_watcher.py` | Optional script — calls Claude API to batch-process new stories |
+| `skills/behavioral-story-optimization/SKILL.md` | Skill definition — Claude handles all workflows (summarize, top 10) directly |
 
 Both `rawStorySummary.md` and `targettedSummaries.md` are excluded from version
 control (personal content). See `.gitignore`.
@@ -67,30 +66,37 @@ Each story is compressed into a structured STAR block:
 
 ---
 
-## Scripts
+## Usage
 
-### `generate_summaries.py` — Bulk Regeneration
+### Skill Invocation (Recommended)
 
-Reads all of `rawStorySummary.md`, calls the Claude API for each section, and
-writes a fresh `targettedSummaries.md`. Use this when starting fresh or after
-significantly editing many raw stories.
+All workflows are available directly via the Claude skill — no API key or script required:
 
-```bash
-cd skills/behavioral-story-optimization
-ANTHROPIC_API_KEY=sk-ant-... python scripts/generate_summaries.py
+```
+/behavioral-story-optimization
+Add a new story about [topic] to my library and generate its summary.
 ```
 
-**When to use:** Initial setup, or after bulk edits to raw stories where a full
-regeneration is simpler than incremental updates.
+```
+/behavioral-story-optimization
+Update my summaries with any new stories I've added to rawStorySummary.md.
+```
+
+```
+/behavioral-story-optimization
+Generate my top 10 behavioral stories for my IonQ interview.
+```
+
+See `SKILL.md` for full workflow details.
 
 ---
 
-### `story_watcher.py` — Incremental Watcher
+### `story_watcher.py` — Optional Batch Script
 
 Compares `rawStorySummary.md` against `processed_stories.json` to find new
-stories, generates a summary for each, and appends it to the correct section in
-`targettedSummaries.md`. State is saved after each story so the process can be
-interrupted and resumed.
+stories, generates a summary for each via the Claude API, and appends it to the
+correct section in `targettedSummaries.md`. State is saved after each story so
+the process can be interrupted and resumed.
 
 ```bash
 # Run once (good for Task Scheduler / cron):
@@ -109,8 +115,8 @@ python scripts/story_watcher.py --rebuild --once
 python scripts/story_watcher.py --model claude-haiku-4-5-20251001
 ```
 
-**When to use:** After adding one or a few new stories to `rawStorySummary.md`
-without wanting to regenerate everything.
+**When to use:** When you prefer a fully automated batch run over invoking the skill.
+Requires `ANTHROPIC_API_KEY` in your environment.
 
 #### Windows Task Scheduler (auto-run on login)
 
@@ -127,44 +133,13 @@ without wanting to regenerate everything.
 
 ---
 
-### `generate_top10_stories.py` — Role-Specific Top 10
-
-Reads `targettedSummaries.md`, finds the job's output folder, reads the job
-description, and calls Claude to select and rank the 10 most relevant stories
-for that interview. Writes a reference document (summary table + full story
-details) to the job's output folder.
-
-The script is a two-step process — no API key required. Claude reads the context
-and makes the selection; the script handles all file I/O.
-
-```bash
-# Step 1 — print job description + story library for Claude to read:
-python scripts/generate_top10_stories.py "IonQ"
-
-# Step 2 — Claude selects top 10 and passes JSON back via --write:
-python scripts/generate_top10_stories.py "IonQ" --write '<json>'
-
-# Other commands:
-python scripts/generate_top10_stories.py --list                  # list folders
-python scripts/generate_top10_stories.py "IonQ" --dry-run        # validate + story inventory
-echo '<json>' | python scripts/generate_top10_stories.py "IonQ" --write -  # stdin
-```
-
-Output file: `Ted_Cohen-Top10BehavioralStories-[CompanyName]-[RoleTitle].md`
-Saved to: `skills/job-application-helper/assets/outputs/[matched-folder]/`
-
-**When to use:** Before any job interview to quickly generate a role-tailored
-behavioral story reference sheet.
-
----
-
 ## Troubleshooting
 
 | Problem | Fix |
 |---------|-----|
-| `ANTHROPIC_API_KEY not set` | Set env var or prepend to command |
+| `ANTHROPIC_API_KEY not set` | Set env var or use the skill directly (no API key needed) |
 | `No new stories found` after adding one | Check `*italic*` formatting on the title line in rawStorySummary.md |
 | Summary appended to wrong section | Section heading in rawStorySummary.md must exactly match `## heading` in targettedSummaries.md |
-| Want to re-generate one story | Remove its key from `processed_stories.json`, then run `--once` |
-| Want to regenerate everything | Run `--rebuild --once` |
-| Job folder not found | Run `--list` to see available folders; use more of the folder name in your search term |
+| Want to re-generate one story | Remove its key from `processed_stories.json`, then run Mode B via the skill or `--once` |
+| Want to regenerate everything | Ask the skill to rebuild, or run `python scripts/story_watcher.py --rebuild --once` |
+| Job folder not found for top 10 | List `skills/job-application-helper/assets/outputs/` to see available folders |
