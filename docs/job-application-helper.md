@@ -4,7 +4,7 @@ A Claude AI skill for automating and optimizing job application materials using 
 
 ## Overview
 
-This skill provides a comprehensive workflow for creating tailored resumes and cover letters optimized for specific job postings. It specializes in Technical Program Manager, Senior Integration Engineer, and Engineering Program Manager roles in Tech, Aerospace/Defense, and Outdoors industries.
+This skill provides a comprehensive workflow for creating tailored resumes and cover letters optimized for specific job postings. It specializes in Research Scientist, Metrology Engineer, and Integration Engineer roles in photonics, semiconductors, and quantum technology.
 
 ### Example Resume Output
 ![Resume evolution: Baseline (left) vs. Claude Tailored (right) ](../images/output-baseline-resumes-sidebyside.png)
@@ -51,15 +51,19 @@ This skill provides a comprehensive workflow for creating tailored resumes and c
 
 **Location**: `skills/job-application-helper/assets/`
 
-- **`Jason_J_Garcia-RESUME.docx`**: Replace with your own baseline resume
+- **`Ted_Cohen-RESUME.docx`**: Replace with your own baseline resume
   - Use placeholder text like `[City, State]`, `[Phone]`, `[Email]`, `[LinkedIn]` for contact info
   - Maintain standard section headers (Experience, Education, Technical Skills, Key Accomplishments)
   - Use consistent formatting (the XML editing approach depends on it)
   - Ensure it's a `.docx` file, not `.doc` or PDF
 
-- **`Jason_J_Garcia-COVERLETTER.md`**: Replace with your own cover letter template
-  - Keep the placeholder structure for dynamic content
-  - Match your preferred writing style and tone
+- **`Ted_Cohen-COVERLETTER.docx`**: Replace with your own baseline cover letter — this is the actual template used by the script
+  - `prepare_cover_letter.sh` copies this file, unpacks it to XML, and repacks it after editing
+  - Must be a `.docx` file; keep the same paragraph structure (P005–P026) so the script's paragraph map stays valid
+
+- **`Ted_Cohen-COVERLETTER.md`**: Human-readable mirror of the `.docx` template — used by Claude as a paragraph-length reference during XML editing
+  - Keep this in sync with the `.docx` whenever you update the baseline cover letter
+  - Not used by the script directly, but referenced in the SKILL.md Step 3 workflow
 
 #### 2. Reference Files (Your Background)
 
@@ -88,20 +92,20 @@ The SKILL.md file contains hard-coded references that must be updated:
 
 **Line 11**: LinkedIn Profile URL
 ```yaml
-- **LinkedIn Profile**: https://www.linkedin.com/in/24-jason-j-garcia/
+- **LinkedIn Profile**: https://www.linkedin.com/in/tacohen/
 ```
 → Change to your LinkedIn profile URL
 
 **Line 10**: Baseline resume filename
 ```yaml
-- **Baseline Resume**: `assets/Jason_J_Garcia-RESUME.docx`
+- **Baseline Resume**: `assets/Ted_Cohen-RESUME.docx`
 ```
 → Update to match your renamed asset files (or keep the same filenames)
 
 **Line 256-257**: Output filename pattern
 ```yaml
-- Resume filename: `Jason_J_Garcia-RESUME-[CompanyName]-[RoleTitle].docx`
-- Cover letter filename: `Jason_J_Garcia-COVERLETTER-[CompanyName]-[RoleTitle].docx`
+- Resume filename: `Cohen-RESUME-[CompanyName]-[RoleTitle].docx`
+- Cover letter filename: `Cohen-COVERLETTER-[CompanyName]-[RoleTitle].docx`
 ```
 → Update to use your name
 
@@ -115,8 +119,9 @@ description: "... This skill specializes in Technical Program Manager, Senior In
 
 Before using this skill for the first time:
 
-- [ ] Replace `assets/Jason_J_Garcia-RESUME.docx` with your baseline resume
-- [ ] Replace `assets/Jason_J_Garcia-COVERLETTER.md` with your cover letter template
+- [ ] Replace `assets/Ted_Cohen-RESUME.docx` with your baseline resume
+- [ ] Replace `assets/Ted_Cohen-COVERLETTER.docx` with your baseline cover letter (this is what the script uses)
+- [ ] Update `assets/Ted_Cohen-COVERLETTER.md` to match — it's the human-readable mirror Claude uses for paragraph-length reference
 - [ ] Update `references/user_profile.md` with your background and goals
 - [ ] Update `references/list_of_key_accomplishments.md` with your achievements
 - [ ] Update `references/list_of_target_companies.md` with your target companies
@@ -165,7 +170,7 @@ python3 /path/to/pack.py unpacked/ [output_filename].docx --original baseline_re
 ```
 
 The skill modifies:
-- **Branding Title**: Bold, role-specific title (e.g., "Senior Technical Program Manager")
+- **Branding Title**: Bold, role-specific title (e.g., "Research Scientist")
 - **Branding Statement**: 3-4 sentence narrative with top keywords from job description
 - **Areas of Expertise**: Reordered pipe-separated expertise areas matching job priorities
 - **Technical Skills**: Reordered pipe-separated skills matching job requirements
@@ -194,8 +199,8 @@ Automated verification:
 ### Step 5: Delivery
 
 Files are delivered with standardized naming:
-- `Jason_J_Garcia-RESUME-[CompanyName]-[RoleTitle].docx`
-- `Jason_J_Garcia-COVERLETTER-[CompanyName]-[RoleTitle].docx`
+- `Cohen-RESUME-[CompanyName]-[RoleTitle].docx`
+- `Cohen-COVERLETTER-[CompanyName]-[RoleTitle].docx`
 
 ## Using the Skill
 
@@ -248,7 +253,7 @@ To use this skill with Claude.ai through your browser, you need to package it in
 
 1. **Navigate to the repository root**:
    ```bash
-   cd /path/to/ai-assisted-job-search
+   cd /path/to/technicalAIJobSearch
    ```
 
 2. **Run the packaging script**:
@@ -306,8 +311,8 @@ Example output:
 ✅ Skill validation passed
 
   Added: job-application-helper/SKILL.md
-  Added: job-application-helper/assets/Jason_J_Garcia-RESUME.docx
-  Added: job-application-helper/assets/Jason_J_Garcia-COVERLETTER.md
+  Added: job-application-helper/assets/Ted_Cohen-RESUME.docx
+  Added: job-application-helper/assets/Ted_Cohen-COVERLETTER.md
   [... more files ...]
 
 ✅ Successfully packaged skill to: job-application-helper.skill

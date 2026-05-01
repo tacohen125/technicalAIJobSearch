@@ -9,7 +9,8 @@ description: "Tailors resumes and cover letters for job applications using Linke
 
 - **Baseline Resume**: `assets/Ted_Cohen-RESUME.docx` (MUST be edited via XML, never recreated)
 - **LinkedIn Profile**: https://www.linkedin.com/in/tacohen/ (for additional experience details)
-- **Cover Letter Template**: `assets/Ted_Cohen-COVERLETTER.md` (for formatting structure)
+- **Cover Letter Template (script)**: `assets/Ted_Cohen-COVERLETTER.docx` (copied and XML-edited by `prepare_cover_letter.sh`)
+- **Cover Letter Reference (Claude)**: `assets/Ted_Cohen-COVERLETTER.md` (human-readable mirror — use for paragraph-length reference during XML editing)
 - **Target Companies List**: `references/list_of_target_companies.md`
 
 ## Core Principles

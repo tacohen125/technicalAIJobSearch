@@ -403,12 +403,6 @@ MIT License - Feel free to adapt these skills for your own job search needs.
 
 ---
 
-## 📊 Reports & Evaluations
-
-- [Job Application Helper Skill Evaluation (2026-02-02)](./skill-creator-reports/skill-evaluation-2026-02-02.md) - Best practices evaluation against Claude Code Skill Creator guidelines
-
----
-
 ## 🎯 Roadmap
 
 **Planned Skills:**
