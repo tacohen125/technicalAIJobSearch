@@ -23,7 +23,7 @@
 ## Complete Experience Bullets
 
 ### Research Scientist & Sector Lead
-- Create custom optical metrology workflows and transfer methods to eight engineers and external vendors.
+- Created custom optical metrology workflows and transferred methods to eight engineers and external vendors.
 - Oversaw staffing, training, IQC, safety, and maintenance of 11 metrology tools.
 - Managed daily activities of metrology engineers and resolved conflicts to enable strong team performance.
 - Produced the highest RI, transparency, and index contrast holographic material reported to date.
@@ -31,8 +31,8 @@
 - Monitored pilot process stability and led RCA task forces to resolve OOS events and improve yield.
 - Engineered test specifications for opto-mechanical and automation teams to build pilot-scale test systems.
 - Qualified and deployed metrology tools at external vendor sites and developed FAT/SATs protocols.
-- Develop, deploy, and qualify prototype optical instrumentation, including FAT/SATs with external vendors.
-- Collaborate with TPMs and AR display system architects to establish program priorities and budgets.
+- Developed, deployed, and qualified prototype optical instrumentation, including FAT/SATs with external vendors.
+- Collaborated with TPMs and AR display system architects to establish program priorities and budgets.
 - Developed process flows to efficiently laminate, record, bleach, and characterize volume holograms.
 
 ### Optical Characterization and Integration Scientist
