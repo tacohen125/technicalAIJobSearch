@@ -344,7 +344,7 @@ def _layer2_is_heading(signals: dict[str, bool]) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Name detection
+# Name and contact info detection
 # ---------------------------------------------------------------------------
 
 _CONTACT_PATTERN = re.compile(
@@ -353,6 +353,49 @@ _CONTACT_PATTERN = re.compile(
     r'\b\d{5}\b',                        # ZIP
     re.IGNORECASE,
 )
+
+_EMAIL_RE    = re.compile(r'[\w.+\-]+@[\w.\-]+\.\w+')
+_PHONE_RE    = re.compile(r'\(?\d{3}\)?[\s.\-]\d{3}[\s.\-]\d{4}')
+_LINKEDIN_RE = re.compile(r'linkedin\.com/in/[\w\-]+', re.IGNORECASE)
+_LOCATION_RE = re.compile(r'\b[A-Z][a-z]+(?: [A-Z][a-z]+)*,\s+[A-Z]{2}\b')
+
+
+def detect_contact_info(doc, first_header_idx: int) -> dict:
+    """
+    Extract contact fields from the pre-header area of the resume.
+
+    Scans the same window as detect_name() and looks for:
+      email    — user@domain.tld
+      phone    — (NNN) NNN-NNNN or variants
+      linkedin — linkedin.com/in/handle
+      location — City, ST pattern (not always present)
+
+    Returns a dict with whichever fields were found (keys absent if not found).
+    """
+    limit = min(first_header_idx, 7) if first_header_idx > 0 else 7
+    info: dict = {}
+    for para in doc.paragraphs[:limit]:
+        text = _text(para)
+        if not text:
+            continue
+        if not info.get("email"):
+            m = _EMAIL_RE.search(text)
+            if m:
+                info["email"] = m.group(0)
+        if not info.get("phone"):
+            m = _PHONE_RE.search(text)
+            if m:
+                info["phone"] = m.group(0)
+        if not info.get("linkedin"):
+            m = _LINKEDIN_RE.search(text)
+            if m:
+                val = m.group(0)
+                info["linkedin"] = val if val.startswith("http") else "https://" + val
+        if not info.get("location"):
+            m = _LOCATION_RE.search(text)
+            if m:
+                info["location"] = m.group(0)
+    return info
 
 
 def detect_name(doc, first_header_idx: int) -> str:
@@ -562,7 +605,8 @@ def parse_resume(path: str) -> dict:
     # Pass 2 — detect name (paragraphs before first header)
     # ------------------------------------------------------------------
     first_header_idx = header_records[0][0] if header_records else len(paragraphs)
-    name = detect_name(doc, first_header_idx)
+    name         = detect_name(doc, first_header_idx)
+    contact_info = detect_contact_info(doc, first_header_idx)
 
     # ------------------------------------------------------------------
     # Pass 3 — slice content per section and extract structured data
@@ -605,8 +649,11 @@ def parse_resume(path: str) -> dict:
             # formats like Ted's resume (2× normal+BT, 1× ListBullet) are handled.
             entry["accomplishments"] = [_text(p) for p in content_paras]
             entry["bullet_count"] = len(content_paras)
+        elif sec_type == "EDUCATION":
+            entry["content_lines"] = [_text(p) for p in content_paras if _text(p)]
         elif sec_type in ("PUBLICATIONS", "PRESENTATIONS"):
             entry["count"] = len(content_paras)
+            entry["content_lines"] = [_text(p) for p in content_paras if _text(p)]
 
         sections.append(entry)
 
@@ -618,6 +665,7 @@ def parse_resume(path: str) -> dict:
 
     return {
         "name":                name,
+        "contact_info":        contact_info,
         "source_file":         str(Path(path).name),
         "baseline_font_pt":    baseline_pt,
         "detected_page_count": page_count,

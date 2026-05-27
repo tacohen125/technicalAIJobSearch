@@ -1,10 +1,10 @@
 # User Profile: Ted Cohen
 ## Basic Information
-- **Name:** [FILL IN]
+- **Name:** Ted Cohen
 - **Location:** [FILL IN city, state]
-- **Email:** [FILL IN]
-- **Phone:** [FILL IN]
-- **LinkedIn:** [FILL IN URL]
+- **Email:** tacohen125@gmail.com
+- **Phone:** (727)-808-2915
+- **LinkedIn:** https://linkedin.com/in/tacohen
 - **GitHub / Portfolio:** [FILL IN or remove]
 
 ---
@@ -64,25 +64,34 @@ PhD‑trained researcher with deep experience in optical characterization, nanof
 ---
 
 ## Education
-<!-- Detected education section — copy from resume and edit below -->
-**[Degree]**, [Major]  
-[University Name], [City, State] — [Year]
+**University of Washington: Seattle, WA**  —  Graduated: March 2022
+Doctor of Philosophy: Molecular Engineering with a Data Science Option
+Dissertation: Design, Development, and Processing of Perovskite Nanocrystals for Optical Devices
+**Washington University in St. Louis: Saint Louis, MO**  —  Graduated: May 2016
+Bachelor of Science: Energy, Environmental and Chemical Engineering (Summa Cum Laude)
 
 ---
 
 ## Select Publications
-<!-- Publications detected in resume — copy key entries here -->
-<!-- (8 entries found) -->
-
-1. [FILL IN citation]
+1. A full list of 12 publications and 1 patent application can be found on Google Scholar. (400+ Citations)
+2. Guymon, G. G; Sharp, D; Cohen, T. A; Gibbs, S. L; Manna, A; Tzanetopoulos, E; Gamelin, D. R; Majumdar, A; MacKenzie, J. D. Electrohydrodynamic Printing-Based Heterointegration of Quantum Dots on Suspended Nanophotonic Cavities. Advanced Materials Technologies 2024, 9, 2301921.
+3. Cohen, T. A; Sharp, D; Kluherz, K. T; Chen, Y; Munley, C; Anderson, R. T; Swanson, C. S; De Yoreo, J. J; Luscombe, C. K; Majumdar, A; Gamelin, D. R; MacKenzie, J. D. Direct Patterning of Perovskite Nanocrystals on Nanophotonic Cavities with Electrohydrodynamic Inkjet Printing. Nano Letters 2022, 22, 5681.
+4. Huang, Y; Cohen, T. A; Sommerville, P. J. W; Luscombe, C. K. Green Syntheses of Stable and Efficient Organic Dyes for Organic Hybrid Light-Emitting Diodes. Journal of Materials Chemistry C 2021, 9, 7274.
+5. Cohen, T. A;* Huang, Y;* Bricker, N. A; Juhl, C. S; Milstein, T. J; MacKenzie, J. D; Luscombe, C. K; Gamelin, D. R. Modular Zwitterion-Functionalized Poly(isopropyl methacrylate) Polymers for Hosting Luminescent Lead-Halide Perovskite Nanocrystals. Chemistry of Materials 2021, 33, 3779.
+6. Thompson, N. L; Cohen, T. A; Alamdari, S; Hsu, C. W; Williamson, G. A; Beck, D. A. C; Holmberg, V. C. DiffCapAnalyzer: A Python Package for Quantitative Analysis of Total Differential Capacity Data. Journal of Open Source Software 2020, 5, 2624.
+7. Cohen, T. A; Milstein, T. J; Kroupa, D. M; MacKenzie, J. D; Luscombe, C. K; Gamelin, D. R. Quantum-Cutting Yb3+-Doped Perovskite Nanocrystals for Monolithic Bilayer Luminescent Solar Concentrators. Journal of Materials Chemistry A 2019, 7, 9279.
+8. Gamelin, D. R; Cohen, T. A; Kroupa, D. M; Crane, M. J; MacKenzie, J. D; Luscombe, C. K; Milstein, T. J. Layered Luminescent Solar Concentrator. Patent Application, WO2020010267A2, 2018.
 
 ---
 
 ## Select Presentations
-<!-- Presentations detected in resume — copy key entries here -->
-<!-- (7 entries found) -->
-
-1. [FILL IN presentation title, venue, year]
+1. Contributing Speaker, Lifschitz, A; Gennaro, S; Ding, X; Rivera, P; Li F; Phan, A; Tuttle, P; Wang, Z;
+2. Cohen, T. A; Schowengerdt, B; Mcintyre, G. Proc. SPIE PC13414, AR | VR | MR: San Francisco, CA, January 2025.
+3. “High-Refractive Index Holographic Materials for AR Waveguide Fabrication”
+4. Poster, GRC Poster Award, Cohen, T. A; Sharp, D; Kluherz, K. T; Chen, Y; Munley, C; Anderson, R. T; Swanson, C. S; De Yoreo, J. J; Luscombe, C. K; Majumdar, A; Gamelin, D. R; MacKenzie, J. D. Colloidal Semiconductor Nanocrystals Gordon Research Conference: Les Diablerets, Switzerland, July 4, 2022.
+5. “Modelling, Stabilizing, and Printing Perovskite Nanocrystals for Optical Devices”
+6. Invited Seminar, Cohen, T. A. News in Nanocrystals: Massachusetts Institute of Technology, May 4, 2022.
+7. “Direct Patterning of Perovskite Nanocrystals on Nanophotonic Devices with Electrohydrodynamic Inkjet Printing”
 
 ---
 

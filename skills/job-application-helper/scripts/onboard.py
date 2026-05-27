@@ -97,6 +97,11 @@ def _section(result: dict, sec_type: str) -> dict | None:
     return None
 
 
+def _fill(detected: str, placeholder: str) -> str:
+    """Return detected value if present, else placeholder."""
+    return detected if detected else placeholder
+
+
 def scaffold_user_profile(result: dict, first: str, last: str) -> str:
     """
     Build a user_profile.md pre-populated with detected resume content.
@@ -107,17 +112,18 @@ def scaffold_user_profile(result: dict, first: str, last: str) -> str:
     • Education, Publications, Presentations sections if detected
     """
     lines = []
+    ci = result.get("contact_info", {})
 
     # ── Header ──────────────────────────────────────────────────────────────
     lines.append(f"# User Profile: {first} {last}\n")
 
     # ── Basic info ──────────────────────────────────────────────────────────
     lines.append("## Basic Information\n")
-    lines.append("- **Name:** [FILL IN]\n")
-    lines.append("- **Location:** [FILL IN city, state]\n")
-    lines.append("- **Email:** [FILL IN]\n")
-    lines.append("- **Phone:** [FILL IN]\n")
-    lines.append("- **LinkedIn:** [FILL IN URL]\n")
+    lines.append(f"- **Name:** {first} {last}\n")
+    lines.append(f"- **Location:** {_fill(ci.get('location', ''), '[FILL IN city, state]')}\n")
+    lines.append(f"- **Email:** {_fill(ci.get('email', ''), '[FILL IN]')}\n")
+    lines.append(f"- **Phone:** {_fill(ci.get('phone', ''), '[FILL IN]')}\n")
+    lines.append(f"- **LinkedIn:** {_fill(ci.get('linkedin', ''), '[FILL IN URL]')}\n")
     lines.append("- **GitHub / Portfolio:** [FILL IN or remove]\n")
     lines.append("\n---\n")
 
@@ -192,29 +198,49 @@ def scaffold_user_profile(result: dict, first: str, last: str) -> str:
     # ── Education ───────────────────────────────────────────────────────────
     lines.append("\n## Education\n")
     edu_sec = _section(result, "EDUCATION")
-    if edu_sec and edu_sec.get("paragraph_count", 0) > 0:
-        lines.append("<!-- Detected education section — copy from resume and edit below -->\n")
-    lines.append("**[Degree]**, [Major]  \n")
-    lines.append("[University Name], [City, State] — [Year]\n\n")
+    edu_lines = edu_sec.get("content_lines", []) if edu_sec else []
+    if edu_lines:
+        # Render each line; tab-delimited lines (Institution\t\tGraduated) become bold headers
+        for ln in edu_lines:
+            if '\t' in ln:
+                # Split on first tab cluster: "University: City, State  Graduated: Date"
+                parts = [p.strip() for p in ln.split('\t') if p.strip()]
+                lines.append(f"**{parts[0]}**")
+                if len(parts) > 1:
+                    lines.append(f"  —  {parts[-1]}")
+                lines.append("\n")
+            else:
+                lines.append(f"{ln}\n")
+        lines.append("\n")
+    else:
+        lines.append("**[Degree]**, [Major]  \n")
+        lines.append("[University Name], [City, State] — [Year]\n\n")
     lines.append("---\n")
 
     # ── Publications (only if detected) ─────────────────────────────────────
     pub_sec = _section(result, "PUBLICATIONS")
     if pub_sec:
         lines.append("\n## Select Publications\n")
-        lines.append("<!-- Publications detected in resume — copy key entries here -->\n")
-        lines.append(f"<!-- ({pub_sec.get('count', 0)} entries found) -->\n\n")
-        lines.append("1. [FILL IN citation]\n\n")
-        lines.append("---\n")
+        pub_lines = pub_sec.get("content_lines", [])
+        if pub_lines:
+            for i, ln in enumerate(pub_lines, 1):
+                # First non-bulleted line is often an intro sentence, not a citation
+                lines.append(f"{i}. {ln}\n")
+        else:
+            lines.append("1. [FILL IN citation]\n")
+        lines.append("\n---\n")
 
     # ── Presentations (only if detected) ────────────────────────────────────
     pres_sec = _section(result, "PRESENTATIONS")
     if pres_sec:
         lines.append("\n## Select Presentations\n")
-        lines.append("<!-- Presentations detected in resume — copy key entries here -->\n")
-        lines.append(f"<!-- ({pres_sec.get('count', 0)} entries found) -->\n\n")
-        lines.append("1. [FILL IN presentation title, venue, year]\n\n")
-        lines.append("---\n")
+        pres_lines = pres_sec.get("content_lines", [])
+        if pres_lines:
+            for i, ln in enumerate(pres_lines, 1):
+                lines.append(f"{i}. {ln}\n")
+        else:
+            lines.append("1. [FILL IN presentation title, venue, year]\n")
+        lines.append("\n---\n")
 
     # ── Target roles ────────────────────────────────────────────────────────
     lines.append("\n## Target Roles\n")
