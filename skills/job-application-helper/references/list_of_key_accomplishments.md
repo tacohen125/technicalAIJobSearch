@@ -1,40 +1,43 @@
 # Key Accomplishments
 
+> **How to use this template:**
+> List your 3–5 strongest career accomplishments here. These are used when selecting
+> and writing Key Accomplishments bullets on tailored resumes and in cover letters.
+> Focus on outcomes with quantified metrics. The more specific, the better.
+
 Use this list as a quick-reference during resume tailoring and cover letter writing.
 Keep entries focused on outcomes and metrics.
 
 ---
 
-## 1. Diffractive Materials Characterization: Developed custom metrology workflows to ...
+## 1. [Title of Accomplishment]
 
 **Full text:**
-Diffractive Materials Characterization: Developed custom metrology workflows to evaluate early‑stage AR/VR materials, justifying $5M+ in annual investment and enabling the discovery of the highest refractive index, Δn, and transparency holographic material reported to date. Transferred methods to product organization to facilitate a material dispersion root cause analysis and reduce a key EVT build’s design‑to‑fab gap by 50%.
+[Describe the accomplishment in 1–3 sentences. Include what you did, how you did it,
+and the measurable outcome.]
 
-**[Add metrics: quantify the impact — %, $, time saved, scale, etc.]**
+**Metrics:** [Quantify impact — %, $, headcount, time saved, scale, awards, etc.]
 
-**Tags:** [FILL IN — e.g. leadership, technical, cross-functional]
+**Tags:** [e.g. leadership, technical, cross-functional, cost-savings, innovation]
 
 ---
 
-## 2. Waveguide Lithography Development: Designed and implemented novel lithography fl...
+## 2. [Title of Accomplishment]
 
 **Full text:**
-Waveguide Lithography Development: Designed and implemented novel lithography flows enabling manufacturing of Orion silicon carbide waveguides. Developed ML‑based image‑processing software to measure grating CDs with 100k× higher data density and 90% reduced cycle times.
+[Describe the accomplishment in 1–3 sentences.]
 
-**[Add metrics: quantify the impact — %, $, time saved, scale, etc.]**
+**Metrics:** [Quantify impact]
 
-**Tags:** [FILL IN — e.g. leadership, technical, cross-functional]
+**Tags:** [e.g. leadership, technical, cross-functional]
 
 ---
 
-## 3. Inkjet Printing for Photonic Integration: Demonstrated deterministic inkjet plac...
+## 3. [Title of Accomplishment]
 
 **Full text:**
-Inkjet Printing for Photonic Integration: Demonstrated deterministic inkjet placement of colloidal quantum dots on photonic integrated circuits, motivating a $13M NSF STC and establishing the only scalable pathway for selective placement of single colloidal quantum emitters on air‑suspended cavities with 100 nm spacing.
+[Describe the accomplishment in 1–3 sentences.]
 
-**[Add metrics: quantify the impact — %, $, time saved, scale, etc.]**
+**Metrics:** [Quantify impact]
 
-**Tags:** [FILL IN — e.g. leadership, technical, cross-functional]
-
----
-
+**Tags:** [e.g. leadership, technical, cross-functional]
