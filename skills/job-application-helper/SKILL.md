@@ -54,7 +54,7 @@ Before beginning work, identify the user's request:
 
 **Other Requests:**
 - **Company research?** → Read `references/company_research.md` and perform web search
-- **Interview preparation?** → Read `references/interview_preparation.md` and generate questions/responses
+- **Interview preparation?** → Use the `/interview-study-guide` or `/behavioral-story-optimization` skills instead
 - **Skill gap analysis?** → Read `references/skill_gap_analysis.md` and analyze job requirements
 - **Networking support?** → Read `references/networking_support.md` and draft outreach messages
 - **LinkedIn profile support?** → Read `references/linkedin_profile_optimization.md` to optimize profile sections and content
@@ -354,7 +354,7 @@ mv {FirstName_LastName}-COVERLETTER-[CompanyName]-[RoleTitle].docx assets/output
 ## Additional Capabilities
 
 - **Company Research**: Read `references/company_research.md`. Always use web search before writing cover letters.
-- **Interview Preparation**: Read `references/interview_preparation.md` for practice questions, STAR response crafting, and format-specific prep.
+- **Interview Preparation**: Use the `/interview-study-guide` skill (role-specific study guides) or `/behavioral-story-optimization` skill (STAR story development) instead.
 - **Skill Gap Analysis**: Read `references/skill_gap_analysis.md` to compare user qualifications against job requirements.
 - **Networking Support**: Read `references/networking_support.md` for LinkedIn outreach, cold emails, and networking strategy.
 - **LinkedIn Profile Optimization**: Read `references/linkedin_profile_optimization.md` for profile sections, headline, about section, skills management, and visibility strategies.
