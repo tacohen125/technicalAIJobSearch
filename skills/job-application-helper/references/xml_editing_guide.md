@@ -143,13 +143,13 @@ Only modify text content within `<w:t>` tags. When `<w:t xml:space="preserve">` 
 
 **The baseline resume renders as 3 pages in LibreOffice AND in Word.** `verify_page_count.sh` works correctly — always run it after packing. The 2-page target must be achieved by cutting content from the baseline.
 
-**Verified 2-page char range: 6970–7430 chars.** Char count is a rough guide only — line wrapping matters as much as total chars. Use char count as a pre-check, but always run verify_page_count.sh as the final gate:
+**Verified 3-page char range: 6680–7560 chars.** Char count is a rough guide only — line wrapping matters as much as total chars. Use char count as a pre-check, but always run verify_page_count.sh as the final gate:
 
 **Single-line bullet rule**: Experience bullets (non-list paragraphs) must stay under ~110 chars to render as 1 line. Bullets in the 113–158 char range wrap to 2 lines, adding significant vertical space. Each extra wrap costs one line (~14pt). Four extra wraps = ~56pt ≈ pushed-to-3-page territory even when total char count looks safe. Always check the lengths of paras 19, 20, 24, 25, 26 — these are the most common overflow points.
 
 ```bash
 python scripts/para_utils.py chars unpacked/word/document.xml
-# Baseline = 7679 chars (3 pages). Target: ≤7400 chars for 2 pages.
+# Baseline = 7679 chars (3 pages). Target: ≤7530 chars for 3 pages.
 # Do NOT use "within ±200 of baseline" — baseline is 3 pages, not 2.
 ```
 

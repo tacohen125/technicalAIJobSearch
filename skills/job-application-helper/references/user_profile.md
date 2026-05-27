@@ -1,67 +1,93 @@
-# User Profile
+# User Profile: Ted Cohen
+## Basic Information
+- **Name:** [FILL IN]
+- **Location:** [FILL IN city, state]
+- **Email:** [FILL IN]
+- **Phone:** [FILL IN]
+- **LinkedIn:** [FILL IN URL]
+- **GitHub / Portfolio:** [FILL IN or remove]
 
-**Current Role**: Research Scientist and Sector Lead at Meta (AR/VR Research Technologies)
-**Experience**: 9 years in Metrology Engineering and Photonic Device Engineering
-**Location**: Seattle, WA (willing to relocate to Western USA: CO, UT, ID)
-**Target Level**: Senior or higher
-**Target Roles**: Research Scientist, Metrology Engineer, Integration Engineer
-**Target Industries**: Tech, Semiconductors
-**Salary Range**: $175k - $205k
-**Work Preference**: Hybrid or Onsite
+---
+## Professional Summary
+<!-- Branding statement draft detected from resume:
+PhD‑trained researcher with deep experience in optical characterization, nanofabrication, and simulation-driven device analysis for optics and semiconductor manufacturing. Combines hands‑on patterning process development, novel waveguide fabrication, measurement automation, and physics‑based modeling to evaluate complex optical behavior, de‑risk new processes, and guide design decisions in manufacturing environments.
+-->
+[FILL IN your polished 2-3 sentence professional summary]
 
+---
 ## Key Competencies
-- Process integration, pilot scale processing, workflow optimization, manufacturing readiness, DFM/DFT, quality control strategy.
-- Nanofabrication process development, clean room fabrication, lab scale device prototyping, integrated photonics, advanced patterning methods, optical materials processing.
-- In line metrology and characterization, scatterometry, interferometry, radiometry, DOE/SPC, high throughput measurement development.
-- Free space and near eye optical systems, polarization and diffractive optics, geometric and Fourier optics, ray tracing, precision optical alignment.
-- Python, MATLAB, JMP, RCWA simulation, data analysis and modeling, GitHub version control, Claude Code.
-- Test automation, instrumentation debugging, optomechanical engineering, Autodesk Inventor, time resolved spectroscopy, synthetic chemistry.
-- Cross functional coordination, test planning, structured problem solving, FMEA, root cause analysis, risk management.
-- Team creation and mentorship, task prioritization and staffing, global vendor management, budget planning, conflict resolution.
-- Technical writing and documentation, project management, research roadmap development, program planning and prioritization, audit and readiness preparation.
+<!-- Draft from resume Skills section:
+  Nanofabrication & Process Integration: Pilot‑scale process development, lithography and advanced patterning, optical materials processing, DFM/DFT, quality control, DOE/SPC, FMEA and root cause analysis.
+  Metrology & Characterization: Inline optical metrology, free‑space and near‑eye optical systems, diffractive optics, precision optical alignment, interferometry, display characterization, time‑resolved spectroscopy.
+  Modeling & Data Analysis: Ray tracing, RCWA simulation, Python, MATLAB, JMP, Claude Code, data analysis and modeling, test automation, version control (GitHub), shell scripting and Unix/Linux environments.
+  Technical Leadership: Cross‑functional coordination, team building and mentorship, global vendor management, budget and risk ownership, technical documentation and readiness preparation.
+-->
 
-## Complete Experience Bullets
+**[Review the draft above and clean up below]**
 
-### Research Scientist & Sector Lead
-- Created custom optical metrology workflows and transferred methods to eight engineers and external vendors.
-- Oversaw staffing, training, IQC, safety, and maintenance of 11 metrology tools.
-- Managed daily activities of metrology engineers and resolved conflicts to enable strong team performance.
-- Produced the highest RI, transparency, and index contrast holographic material reported to date.
-- Transferred methods to product organization to facilitate film dispersion RCA that reduced a key EVT build’s design-to-fab gap by 50%.
-- Monitored pilot process stability and led RCA task forces to resolve OOS events and improve yield.
-- Engineered test specifications for opto-mechanical and automation teams to build pilot-scale test systems.
-- Qualified and deployed metrology tools at external vendor sites and developed FAT/SATs protocols.
-- Developed, deployed, and qualified prototype optical instrumentation, including FAT/SATs with external vendors.
-- Collaborated with TPMs and AR display system architects to establish program priorities and budgets.
-- Developed process flows to efficiently laminate, record, bleach, and characterize volume holograms.
+- Nanofabrication & Process Integration: Pilot‑scale process development, lithography and advanced patterning, optical materials processing, DFM/DFT, quality control, DOE/SPC, FMEA and root cause analysis.
+- Metrology & Characterization: Inline optical metrology, free‑space and near‑eye optical systems, diffractive optics, precision optical alignment, interferometry, display characterization, time‑resolved spectroscopy.
+- Modeling & Data Analysis: Ray tracing, RCWA simulation, Python, MATLAB, JMP, Claude Code, data analysis and modeling, test automation, version control (GitHub), shell scripting and Unix/Linux environments.
+- Technical Leadership: Cross‑functional coordination, team building and mentorship, global vendor management, budget and risk ownership, technical documentation and readiness preparation.
 
-### Optical Characterization and Integration Scientist
-- Developed optical characterization methodologies for diffractive waveguide components and assemblies.
-- Built custom, pilot-scale display test systems with SPC monitoring, reducing cycle times by 98%.
-- Owned data pipeline and developed RCWA and raytracing simulations to link in-line metrology data to device-level waveguide performance, helping guide decisions about materials and processes.
-- Presented to external vendors, collaborators, and leadership to inform joint development projects.
-- Built custom proof-of-concept and pilot-scale metrology tools with SPC monitoring.
-- Use AI-assisted modelling and simulation to accelerate optimization of novel optical components.
+---
+## Work Experience
+### Meta Reality Labs Research, Redmond, WA — May 2025 – March 2026
+**Research Scientist & Sector Lead: New Materials Metrology & Design Validation**
 
-### Lithography Process Engineer
+- Owned operations for 11 custom and commercial metrology systems, including staffing, IQC, and safety programs, and led workflow implementation with 8 engineers and external vendors.
+- Engineered specifications for optomechanical and automation teams to build pilot‑scale measurement systems.
+- Developed ray‑tracing and RCWA models supporting image‑quality‑driven metrology and design validation.
 
-- Designed masksets and developed lithography processes for pilot-scale Orion waveguide manufacturing.
-- Worked with films, etch, wets, and metrology modules to manage fully integrated grating fabrication flows.
-- Wrote SOPs and developed safety protocols to transfer routine processes to operations teams.
-- Managed automated coat and exposure tracks and led troubleshooting activities during tool down events.
+### HCL Tech at Meta Reality Labs, Redmond, WA — September 2022 – May 2025
+**Optical Characterization & Integration Scientist: February 2024 – May 2025**
 
-### Research Associate
+- Designed and deployed pilot‑scale metrology systems with SPC monitoring, reducing cycle time by 98%.
+- Shipped metrology tools to external vendors and developed FAT/SATs to qualify new instrumentation.
+- Owned data pipeline and developed RCWA simulations to extract grating properties from component data.
+- Used AI-assisted modeling and simulation to accelerate optimization of novel optical components.
 
-- Studied the properties of perovskite nanocrystals and leveraged these properties in solar and quantum photonic integrated circuit applications with advanced electrohydrodynamic inkjet printing techniques.
+### Lithography Process Engineer: September 2022 – February 2024
+
+- Designed mask sets and developed lithography processes for pilot-scale waveguide manufacturing.
+- Managed integrated grating fabrication flows across films, etch, wet, and metrology modules.
+- Oversaw operation of automated coat and exposure tracks and led troubleshooting during tool down events.
+
+### University of Washington, Seattle, WA — October 2016 – September 2022
+**Research Associate: Advisers; Daniel Gamelin, Christine Luscombe, and Devin Mackenzie**
+
+- Studied the properties of perovskite nanocrystals and designed custom polymer composites to facilitate integration of these emitters for solar and photonic integrated circuit applications.
 - Developed collaborations with 8 different research groups and mentored 8 students.
-- Studied the properties of perovskite nanocrystals and designed custom polymer composites to facilitate integration of these emitters for solar and electrically active photonic integrated circuit applications.
-- Developed sub-micron inkjet printing process to place colloidal nanocrystal on nanophotonic cavities.
-- Designed quantum dot polymer composites for LED phosphors and built test systems to verify stability.
-- Led long-horizon, milestone-driven research programs, preparing reports and presenting to internal and external stakeholders for a NSF MRSEC ($14 million) and a NSF STC ($13 million).
-- Synthesized and processed photosensitive nanoparticles and polymers using Schenk line techniques.
+- Built custom steady-state and time-resolved spectroscopy setups for fluorescent nanocrystal characterization.
+- Led long-horizon, milestone-driven research programs, preparing reports and presenting to internal and external stakeholders for an NSF MRSEC and an NSF STC.
 
-## Career Goals
-- Continue growth in optics and photonics research
-- Join companies with strong growth trajectories
-- Work with organizations leveraging AI tooling
-- Explore opporunities to transistion to semiconductor industry
+---
+
+## Education
+<!-- Detected education section — copy from resume and edit below -->
+**[Degree]**, [Major]  
+[University Name], [City, State] — [Year]
+
+---
+
+## Select Publications
+<!-- Publications detected in resume — copy key entries here -->
+<!-- (8 entries found) -->
+
+1. [FILL IN citation]
+
+---
+
+## Select Presentations
+<!-- Presentations detected in resume — copy key entries here -->
+<!-- (7 entries found) -->
+
+1. [FILL IN presentation title, venue, year]
+
+---
+
+## Target Roles
+- **Role type:** [FILL IN, e.g. Senior Engineer, Research Scientist]
+- **Industries:** [FILL IN]
+- **Preferred locations:** [FILL IN]
+- **Open to remote:** [Yes / No / Hybrid only]

@@ -32,7 +32,7 @@ bash scripts/verify_page_count.sh assets/outputs/[FOLDER]/[FILENAME].docx 2
 python scripts/para_utils.py chars unpacked/word/document.xml
 ```
 
-**Target char range: 7200–7350 chars.** Stay away from the 7430 ceiling — layout variance and line wrapping can push a borderline resume to 3 pages.
+**Target char range: 7060–7450 chars.** Stay away from the 7430 ceiling — layout variance and line wrapping can push a borderline resume to 3 pages.
 
 **Single-line bullet rule**: Keep all experience bullets under ~110 chars. Bullets in the 113–158 char range wrap to 2 lines; each wrap costs ~14pt of vertical space. Four extra wraps ≈ 56pt ≈ enough to push a borderline resume to 3 pages.
 
@@ -46,7 +46,7 @@ If more than ~2 blank lines remain at the bottom of page 2, add content to fill 
 2. **Add an experience bullet**: Add the next most-relevant bullet from `references/user_profile.md` > Complete Experience Bullets for the most relevant role, keeping it under 110 chars.
 3. **Expand a trimmed bullet**: Slightly lengthen a bullet that was shortened aggressively, up to but not exceeding 110 chars.
 
-A char count near the bottom of the range (6970–7100) is a signal that a gap likely exists. Target **7200–7350 chars** to use the page fully.
+A char count near the bottom of the range (6680–6810) is a signal that a gap likely exists. Target **7060–7450 chars** to use the page fully.
 
 ## Minimum Bullets Rule
 
@@ -100,7 +100,7 @@ Before presenting materials, verify:
 Complete this checklist BEFORE delivering files to the user:
 
 - [ ] **PAGE COUNT: Run `verify_page_count.sh` and confirm PASS (2 pages). Fix and re-run if FAIL. Then instruct user to spot-check in Word.**
-- [ ] **CHAR COUNT: Total chars in target range 7200–7350 (run `para_utils.py chars`)**
+- [ ] **CHAR COUNT: Total chars in target range 7060–7450 (run `para_utils.py chars`)**
 - [ ] **BULLET LENGTH: All experience bullets ≤110 chars (run `para_utils.py list` and check)**
 - [ ] **MIN BULLETS: Every experience role has ≥3 bullets**
 - [ ] **PAGE GAP: No more than ~2 blank lines at bottom of page 2**

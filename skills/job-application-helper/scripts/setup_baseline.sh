@@ -3,61 +3,66 @@ set -euo pipefail
 
 # setup_baseline.sh — Calibrate char count targets for a new baseline resume
 #
-# When you replace assets/Ted_Cohen-RESUME.docx with a new baseline resume,
-# run this script to recalculate the 2-page char count targets and update the
-# reference documentation automatically.
+# When you add your baseline resume (via onboard.py or manually), run this
+# script to calculate same-page char count targets and update the reference
+# documentation automatically.
 #
 # Usage:
 #   bash scripts/setup_baseline.sh [OPTIONS]
 #
 # Options:
-#   --baseline <path>   Path to baseline .docx (default: assets/Ted_Cohen-RESUME.docx)
-#   --no-verify         Skip LibreOffice page count check (useful if LibreOffice not installed)
-#   --dry-run           Print computed values without modifying any files
-#   --help              Show this help message
+#   --baseline <path>     Path to baseline .docx (default: from config.sh, or
+#                         assets/Ted_Cohen-RESUME.docx for legacy users)
+#   --target-pages N      Target page count for tailored resumes (default: from
+#                         config.sh TARGET_PAGES, or auto-detected from baseline)
+#   --no-verify           Skip LibreOffice page count check
+#   --dry-run             Print computed values without modifying any files
+#   --help                Show this help message
 #
 # What it does:
 #   1. Unpacks the baseline resume to a temp directory
 #   2. Counts total characters with para_utils.py
 #   3. Checks baseline page count with LibreOffice (unless --no-verify)
-#   4. Computes calibrated 2-page char count ranges from empirical ratios
+#   4. Computes calibrated same-page char count ranges from empirical ratios
 #   5. Updates references/xml_editing_guide.md and references/qa_and_delivery.md
 #      with the new values
 #   6. Cleans up temp files
 #
 # After running:
 #   - Review the diff with: git diff references/
-#   - Produce one tailored 2-page resume and confirm the char count falls in
-#     the new target range when it looks correct in Word
+#   - Produce one tailored resume and confirm the char count falls in
+#     the target range when it looks correct in Word
 #   - Commit the updated reference files
 
 # ---------------------------------------------------------------------------
-# Empirical calibration ratios derived from original baseline (7679 chars, 3 pages).
-# These describe where a 2-page Word document falls relative to the 3-page baseline.
-# Scaling these ratios to a new baseline gives a good first approximation.
+# Empirical calibration ratios for same-page targeting.
+# These describe how much the content can shrink relative to the baseline while
+# staying on the same number of pages (e.g., baseline is 2 pages → output is 2 pages).
 #
-#   RATIO_CEILING  = 7430 / 7679 = 0.9676   (absolute max before 3-page risk)
-#   RATIO_FLOOR    = 6968 / 7679 = 0.9076   (too sparse below this)
-#   RATIO_TARGET_MAX = 7350 / 7679 = 0.9571 (recommended upper target)
-#   RATIO_TARGET_MIN = 7200 / 7679 = 0.9376 (recommended lower target)
+#   RATIO_CEILING    — absolute max (above this risks adding a page)
+#   RATIO_FLOOR      — minimum viable content density
+#   RATIO_TARGET_MAX — recommended upper bound (sweet spot)
+#   RATIO_TARGET_MIN — recommended lower bound (sweet spot)
 # ---------------------------------------------------------------------------
-RATIO_CEILING=0.9676
-RATIO_FLOOR=0.9076
-RATIO_TARGET_MAX=0.9571
-RATIO_TARGET_MIN=0.9376
+RATIO_CEILING=0.985
+RATIO_FLOOR=0.870
+RATIO_TARGET_MAX=0.970
+RATIO_TARGET_MIN=0.920
 
 # ---------------------------------------------------------------------------
 # Parse arguments
 # ---------------------------------------------------------------------------
 BASELINE=""
+TARGET_PAGES=""
 VERIFY=true
 DRY_RUN=false
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --baseline)   BASELINE="$2"; shift 2 ;;
-        --no-verify)  VERIFY=false; shift ;;
-        --dry-run)    DRY_RUN=true; shift ;;
+        --baseline)     BASELINE="$2"; shift 2 ;;
+        --target-pages) TARGET_PAGES="$2"; shift 2 ;;
+        --no-verify)    VERIFY=false; shift ;;
+        --dry-run)      DRY_RUN=true; shift ;;
         --help)
             sed -n '/^# setup_baseline/,/^[^#]/p' "$0" | grep '^#' | sed 's/^# \{0,1\}//'
             exit 0 ;;
@@ -66,18 +71,30 @@ while [[ $# -gt 0 ]]; do
 done
 
 # ---------------------------------------------------------------------------
-# Locate skill root and scripts
+# Locate skill root and scripts; source config.sh for defaults
 # ---------------------------------------------------------------------------
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKILL_DIR="$(dirname "${SCRIPT_DIR}")"
 
+CONFIG_FILE="${SKILL_DIR}/config.sh"
+if [[ -f "${CONFIG_FILE}" ]]; then
+    # shellcheck source=/dev/null
+    source "${CONFIG_FILE}"
+fi
+
+# Apply defaults after config sourcing
 if [[ -z "${BASELINE}" ]]; then
-    BASELINE="${SKILL_DIR}/assets/Ted_Cohen-RESUME.docx"
+    if [[ -n "${RESUME_BASENAME:-}" ]]; then
+        BASELINE="${SKILL_DIR}/assets/${RESUME_BASENAME}"
+    else
+        BASELINE="${SKILL_DIR}/assets/Ted_Cohen-RESUME.docx"
+    fi
 fi
 
 if [[ ! -f "${BASELINE}" ]]; then
     echo "ERROR: Baseline resume not found: ${BASELINE}" >&2
-    echo "Place your baseline resume at assets/Ted_Cohen-RESUME.docx or pass --baseline <path>" >&2
+    echo "Run:  python scripts/onboard.py --resume /path/to/resume.docx" >&2
+    echo "  or: bash scripts/setup_baseline.sh --baseline /path/to/resume.docx" >&2
     exit 1
 fi
 
@@ -141,8 +158,9 @@ if [[ "${VERIFY}" == true ]]; then
     echo ""
     echo "Step 2: Checking baseline page count with LibreOffice..."
 
-    # Run verify_page_count.sh; capture output regardless of exit code
-    VERIFY_OUT=$("${SCRIPT_DIR}/verify_page_count.sh" "${BASELINE}" 3 2>&1 || true)
+    # Pass a sentinel (99) so verify_page_count.sh always prints "Pages: N" before
+    # exiting non-zero; the || true prevents set -e from aborting.
+    VERIFY_OUT=$("${SCRIPT_DIR}/verify_page_count.sh" "${BASELINE}" 99 2>&1 || true)
     PAGES_LINE=$(echo "${VERIFY_OUT}" | grep "^Pages:" | head -1)
     BASELINE_PAGES=$(echo "${PAGES_LINE}" | awk '{print $2}')
 
@@ -151,15 +169,7 @@ if [[ "${VERIFY}" == true ]]; then
         echo "           Skipping page count verification. Use --no-verify to suppress this warning."
         BASELINE_PAGES="unknown"
     else
-        echo "  Baseline page count: ${BASELINE_PAGES}"
-        if [[ "${BASELINE_PAGES}" -eq 3 ]]; then
-            echo "  OK: Baseline is 3 pages as expected."
-        elif [[ "${BASELINE_PAGES}" -eq 2 ]]; then
-            echo "  NOTE: Baseline is already 2 pages. The calibration ratios assume a 3-page baseline."
-            echo "        Computed ranges may be conservative. Manual tuning is recommended."
-        elif [[ "${BASELINE_PAGES}" -gt 3 ]]; then
-            echo "  NOTE: Baseline is ${BASELINE_PAGES} pages. Significant cuts will be needed."
-        fi
+        echo "  Baseline page count: ${BASELINE_PAGES} page(s)"
     fi
 else
     echo ""
@@ -167,10 +177,30 @@ else
 fi
 
 # ---------------------------------------------------------------------------
+# Determine TARGET_PAGES
+# ---------------------------------------------------------------------------
+# Priority: --target-pages flag > config.sh TARGET_PAGES > detected BASELINE_PAGES > 2
+if [[ -z "${TARGET_PAGES}" ]]; then
+    if [[ "${BASELINE_PAGES}" =~ ^[0-9]+$ ]]; then
+        TARGET_PAGES="${BASELINE_PAGES}"
+    else
+        TARGET_PAGES="${TARGET_PAGES_CONFIG:-2}"
+    fi
+fi
+
+# When page count is unknown (--no-verify), use TARGET_PAGES as the best estimate
+# so reference-file comments say "3 pages" instead of "baseline"
+if [[ "${BASELINE_PAGES}" == "unknown" && -n "${TARGET_PAGES}" ]]; then
+    BASELINE_PAGES="${TARGET_PAGES}"
+fi
+
+echo "  Target page count: ${TARGET_PAGES} page(s) (tailored resumes will target this)"
+
+# ---------------------------------------------------------------------------
 # Step 3: Compute calibrated char count ranges
 # ---------------------------------------------------------------------------
 echo ""
-echo "Step 3: Computing calibrated 2-page char count ranges..."
+echo "Step 3: Computing calibrated ${TARGET_PAGES}-page char count ranges..."
 
 compute_range() {
     # Args: base_chars ratio  →  prints integer (rounds to nearest 10)
@@ -183,14 +213,14 @@ NEW_CEILING=$(compute_range "${BASELINE_CHARS}" "${RATIO_CEILING}")
 NEW_FLOOR=$(compute_range "${BASELINE_CHARS}" "${RATIO_FLOOR}")
 NEW_TARGET_MAX=$(compute_range "${BASELINE_CHARS}" "${RATIO_TARGET_MAX}")
 NEW_TARGET_MIN=$(compute_range "${BASELINE_CHARS}" "${RATIO_TARGET_MIN}")
-# Hard ceiling for the inline code comment (ceiling - 30, rounded to 10)
+# Hard ceiling for the inline code comment (ceiling - ~30, rounded to 10)
 NEW_HARD_CEILING=$(compute_range "${BASELINE_CHARS}" "$(echo "${RATIO_CEILING} - 0.004" | "${PYTHON}" -c "import sys; print(eval(sys.stdin.read()))")")
 
 echo ""
-echo "  Baseline chars:      ${BASELINE_CHARS}"
-echo "  2-page floor:        ${NEW_FLOOR}   (too sparse below this)"
-echo "  2-page ceiling:      ${NEW_CEILING} (risk of 3 pages above this)"
-echo "  Target range:        ${NEW_TARGET_MIN}–${NEW_TARGET_MAX} (recommended sweet spot)"
+echo "  Baseline chars:       ${BASELINE_CHARS}"
+echo "  ${TARGET_PAGES}-page floor:        ${NEW_FLOOR}   (too sparse below this)"
+echo "  ${TARGET_PAGES}-page ceiling:      ${NEW_CEILING} (risk of page overflow above this)"
+echo "  Target range:         ${NEW_TARGET_MIN}–${NEW_TARGET_MAX} (recommended sweet spot)"
 echo ""
 
 # ---------------------------------------------------------------------------
@@ -199,8 +229,8 @@ echo ""
 if [[ "${DRY_RUN}" == true ]]; then
     echo "Step 4: DRY RUN — files not modified. Values that would be written:"
     echo "  xml_editing_guide.md:"
-    echo "    Verified 2-page char range: ${NEW_FLOOR}–${NEW_CEILING} chars"
-    echo "    Baseline = ${BASELINE_CHARS} chars (3 pages). Target: ≤${NEW_HARD_CEILING} chars for 2 pages."
+    echo "    Verified ${TARGET_PAGES}-page char range: ${NEW_FLOOR}–${NEW_CEILING} chars"
+    echo "    Baseline = ${BASELINE_CHARS} chars (${BASELINE_PAGES} pages). Target: ≤${NEW_HARD_CEILING} chars for ${TARGET_PAGES} pages."
     echo "  qa_and_delivery.md:"
     echo "    Target char range: ${NEW_TARGET_MIN}–${NEW_TARGET_MAX} chars"
     echo "    Range bottom reference: ${NEW_FLOOR}–$(( NEW_FLOOR + 130 ))"
@@ -211,13 +241,14 @@ fi
 
 echo "Step 4: Updating reference files..."
 
-# Pass paths as argv to avoid Windows bash-path expansion issues inside heredocs
-"${PYTHON}" - "${XML_GUIDE}" "${QA_GUIDE}" <<PYEOF
+# Pass all values as argv to avoid Windows bash-path expansion issues inside heredocs
+"${PYTHON}" - "${XML_GUIDE}" "${QA_GUIDE}" "${TARGET_PAGES}" "${BASELINE_PAGES}" <<PYEOF
 import re, sys
 
-# Paths passed as arguments so the shell handles quoting/expansion correctly
-xml_guide_path = sys.argv[1]
-qa_guide_path  = sys.argv[2]
+xml_guide_path  = sys.argv[1]
+qa_guide_path   = sys.argv[2]
+target_pages    = sys.argv[3]          # e.g. "2"
+baseline_pages  = sys.argv[4]          # e.g. "3" or "unknown"
 
 baseline = ${BASELINE_CHARS}
 ceiling  = ${NEW_CEILING}
@@ -227,21 +258,24 @@ t_max    = ${NEW_TARGET_MAX}
 hard_c   = ${NEW_HARD_CEILING}
 low_sig  = floor + 130   # "near the bottom" signal threshold
 
+page_label = f"{target_pages}-page"
+base_label = (f"{baseline_pages} pages" if baseline_pages.isdigit() else "baseline")
+
 # ---- xml_editing_guide.md ----
 with open(xml_guide_path, 'r', encoding='utf-8') as f:
     text = f.read()
 
-# Update "Verified 2-page char range: NNNN–NNNN chars."
+# Update "Verified N-page char range: NNNN–NNNN chars."
 text = re.sub(
-    r'\*\*Verified 2-page char range: \d+–\d+ chars\.',
-    f'**Verified 2-page char range: {floor}–{ceiling} chars.',
+    r'\*\*Verified \d+-page char range: \d+–\d+ chars\.',
+    f'**Verified {page_label} char range: {floor}–{ceiling} chars.',
     text
 )
 
-# Update inline comment "# Baseline = NNNN chars (3 pages). Target: ≤NNNN chars for 2 pages."
+# Update inline comment "# Baseline = NNNN chars (N pages). Target: ≤NNNN chars for N pages."
 text = re.sub(
-    r'# Baseline = \d+ chars \(3 pages\)\. Target: ≤\d+ chars for 2 pages\.',
-    f'# Baseline = {baseline} chars (3 pages). Target: ≤{hard_c} chars for 2 pages.',
+    r'# Baseline = \d+ chars \([^)]+\)\. Target: ≤\d+ chars for \d+ pages?\.',
+    f'# Baseline = {baseline} chars ({base_label}). Target: ≤{hard_c} chars for {target_pages} pages.',
     text
 )
 
@@ -293,14 +327,14 @@ echo ""
 echo "=== Setup complete ==="
 echo ""
 echo "New calibration values:"
-echo "  Baseline chars:  ${BASELINE_CHARS}"
-echo "  2-page range:    ${NEW_FLOOR}–${NEW_CEILING} chars"
+echo "  Baseline chars:   ${BASELINE_CHARS}"
+echo "  Target pages:     ${TARGET_PAGES}"
+echo "  ${TARGET_PAGES}-page range:   ${NEW_FLOOR}–${NEW_CEILING} chars"
 echo "  Target sweet spot: ${NEW_TARGET_MIN}–${NEW_TARGET_MAX} chars"
 echo ""
 echo "Next steps:"
 echo "  1. Review changes:  git diff references/"
-echo "  2. Produce one tailored resume and confirm it is exactly 2 pages in Word"
+echo "  2. Produce one tailored resume and confirm it is exactly ${TARGET_PAGES} page(s) in Word"
 echo "     with a char count in the target range (${NEW_TARGET_MIN}–${NEW_TARGET_MAX})."
-echo "  3. If the page count in Word doesn't match, adjust the ratios by passing"
-echo "     the char count of a known 2-page resume to re-derive the ceiling."
+echo "  3. If the page count in Word doesn't match, re-run with --target-pages to adjust."
 echo "  4. Commit the updated reference files."

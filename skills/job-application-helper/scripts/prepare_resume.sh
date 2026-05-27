@@ -9,7 +9,16 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKILL_DIR="$(dirname "${SCRIPT_DIR}")"
-BASELINE="${SKILL_DIR}/assets/Ted_Cohen-RESUME.docx"
+
+# Source user config if present; fall back to legacy Ted_Cohen filename
+CONFIG_FILE="${SKILL_DIR}/config.sh"
+if [[ -f "${CONFIG_FILE}" ]]; then
+    # shellcheck source=/dev/null
+    source "${CONFIG_FILE}"
+    BASELINE="${SKILL_DIR}/assets/${RESUME_BASENAME}"
+else
+    BASELINE="${SKILL_DIR}/assets/Ted_Cohen-RESUME.docx"
+fi
 
 # Find Python executable (python3 maps to Windows Store stub on some Windows installs)
 if command -v python3 >/dev/null 2>&1 && python3 -c "import sys; sys.exit(0)" 2>/dev/null; then
