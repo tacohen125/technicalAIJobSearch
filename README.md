@@ -250,7 +250,6 @@ technicalAIJobSearch/
 │   │   │   ├── qa_and_delivery.md      # QA checklist and delivery workflow
 │   │   │   ├── linkedin_profile_optimization.md
 │   │   │   ├── company_research.md
-│   │   │   ├── interview_preparation.md
 │   │   │   ├── skill_gap_analysis.md
 │   │   │   └── networking_support.md
 │   │   ├── templates/                  # Blank templates for manual setup

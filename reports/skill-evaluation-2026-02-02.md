@@ -40,7 +40,6 @@ skills/job-application-helper/
 │   └── Jason_J_Garcia-COVERLETTER.md
 ├── references/
 │   ├── company_research.md (50 lines)
-│   ├── interview_preparation.md (49 lines)
 │   ├── list_of_key_accomplishments.md (11 lines)
 │   ├── list_of_target_companies.md (28 lines)
 │   ├── networking_support.md (54 lines)
