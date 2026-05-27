@@ -42,6 +42,7 @@ Example format:
 ## Work Experience
 
 > For each role, list ALL bullets you might ever want to draw from — not just what's on your current resume.
+> Include alternate phrasings, metric-rich versions, and bullets from older roles that were cut for space.
 > Claude selects the most relevant subset per job application.
 
 ### [Company Name] — [City, State]
@@ -50,6 +51,7 @@ Example format:
 - [FILL IN accomplishment with metric]
 - [FILL IN accomplishment with metric]
 - [FILL IN accomplishment with metric]
+- [FILL IN any additional bullets not currently on your resume]
 
 ### [Company Name] — [City, State]
 **[Job Title]**  |  [Start Date – End Date]
@@ -67,6 +69,26 @@ Example format:
 
 **[University Name]** — [City, State]
 [Degree], [Major / Field]  |  Graduated [Month Year]
+
+---
+
+## Select Publications
+
+> List all publications you may want to include. The skill selects the most relevant for each application.
+> Remove this section if you have no publications.
+
+1. [Author, A; Your Name; Author, B. "Title." Journal Name Year, Volume, Page.]
+2. [Your Name; Author, B. "Title." Conference Proceedings Year.]
+
+---
+
+## Select Presentations
+
+> List all talks, posters, and invited seminars. The skill selects the most relevant for each application.
+> Remove this section if you have no presentations.
+
+1. [Talk Type, Your Name. "Title." Conference Name: City, State, Month Year.]
+2. [Poster, Your Name; Co-Author. "Title." Symposium Name: City, Country, Month Year.]
 
 ---
 

@@ -65,6 +65,44 @@ Most sections are pre-populated from your resume. Review and complete:
 - **Education** — verify institution/degree lines parsed from your resume
 - **Target Roles** — fill in the role types, industries, and locations you are targeting
 
+#### Adding extra experience bullets
+
+The onboarding script copies only the bullets on your current resume. Claude selects the most relevant subset per application, so it pays to give it more material to choose from — especially for older roles or accomplishments that didn't make the cut when you last trimmed your resume.
+
+To add more bullets, open `references/user_profile.md`, find the relevant `### Company Name` section under **Work Experience**, and append additional bullet lines:
+
+```markdown
+### Acme Corp — Seattle, WA
+**Senior Engineer**  |  Jan 2020 – Jun 2022
+
+- (bullet already pulled from resume)
+- (bullet already pulled from resume)
+- Additional bullet describing an accomplishment not currently on your resume
+- Another alternate phrasing or metric-rich version of an existing bullet
+```
+
+There is no limit on how many bullets you add per role. Bullets that don't fit the 2-page target are simply not selected for a given application.
+
+#### Adding publications and presentations
+
+If `onboard.py` detected a publications or presentations section in your resume, those entries were auto-populated. If not — or if you want to add entries beyond what the parser found — add the sections manually at the bottom of `user_profile.md`, just before **Target Roles**:
+
+```markdown
+## Select Publications
+
+1. Author, A; Author, B; Your Name. "Title of Paper." Journal Name Year, Volume, Page.
+2. Your Name; Author, B. "Another Paper Title." Conference Proceedings Year.
+
+---
+
+## Select Presentations
+
+1. Talk Type, Your Name. "Presentation Title." Conference Name: City, State, Month Year.
+2. Poster, Your Name; Co-Author. "Poster Title." Symposium Name: City, Country, Month Year.
+```
+
+Claude uses these lists when tailoring resumes for roles where publications or presentations add credibility (research scientist, staff engineer, academic-adjacent roles). Add as many entries as you have — the skill selects the most relevant subset per application.
+
 ### `references/list_of_key_accomplishments.md`
 If your resume had an accomplishments section, entries are pre-populated. For each:
 - Verify the metrics are accurate and current

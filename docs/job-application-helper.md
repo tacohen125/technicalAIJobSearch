@@ -65,9 +65,46 @@ The onboarding script:
 
 | File | What needs your attention |
 |------|--------------------------|
-| `references/user_profile.md` | Verify contact info, polish professional summary, add target roles |
+| `references/user_profile.md` | Verify contact info, polish professional summary, add target roles, add extra experience bullets and publications/presentations (see below) |
 | `references/list_of_key_accomplishments.md` | Add metrics to any pre-populated entries that lack them |
 | `references/list_of_target_companies.md` | Add your target companies and roles |
+
+#### Adding extra experience bullets
+
+`onboard.py` copies only the bullets on your current resume. Claude selects the most relevant subset per application, so adding more material — especially for older roles or accomplishments trimmed from your resume — improves tailoring quality.
+
+Open `references/user_profile.md`, find the relevant `### Company Name` block under **Work Experience**, and append bullets:
+
+```markdown
+### Acme Corp — Seattle, WA
+**Senior Engineer**  |  Jan 2020 – Jun 2022
+
+- (bullet already pulled from resume)
+- Additional bullet not currently on your resume, with a metric
+- Alternate phrasing of an existing bullet with different keyword emphasis
+```
+
+There is no limit on how many bullets you add per role. Bullets that don't fit the 2-page target are simply not selected for a given application.
+
+#### Adding publications and presentations
+
+If `onboard.py` detected these sections in your resume, they were auto-populated. To add entries beyond what the parser found, or to add the sections for the first time, append them to `user_profile.md` just before **Target Roles**:
+
+```markdown
+## Select Publications
+
+1. Author, A; Author, B; Your Name. "Title of Paper." Journal Name Year, Volume, Page.
+2. Your Name; Author, B. "Another Paper Title." Conference Proceedings Year.
+
+---
+
+## Select Presentations
+
+1. Talk Type, Your Name. "Presentation Title." Conference Name: City, State, Month Year.
+2. Poster, Your Name; Co-Author. "Poster Title." Symposium Name: City, Country, Month Year.
+```
+
+The skill uses these lists for roles where publications or presentations add credibility (research scientist, staff engineer, academic-adjacent positions). Add as many entries as you have — the skill selects the most relevant subset per application.
 
 ### Cover Letter Setup
 
@@ -81,6 +118,8 @@ Before using this skill for the first time:
 
 - [ ] Run `python scripts/onboard.py --resume /path/to/your_resume.docx`
 - [ ] Fill in `references/user_profile.md` — verify contact info, polish summary, add target roles
+- [ ] Add extra experience bullets to `references/user_profile.md` — bullets not currently on your resume that Claude can draw from
+- [ ] Add or expand **Select Publications** and **Select Presentations** sections in `references/user_profile.md`
 - [ ] Complete `references/list_of_key_accomplishments.md` — add metrics to pre-populated entries
 - [ ] Add companies to `references/list_of_target_companies.md`
 - [ ] (Optional) Add a cover letter: re-run `onboard.py --cover-letter /path/to/cl.docx`
