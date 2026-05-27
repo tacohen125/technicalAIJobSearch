@@ -14,17 +14,17 @@
 **MANDATORY: Run `verify_page_count.sh` on every resume before delivery. Do not skip this step. Do not delegate it to the user.**
 
 ```bash
-cd /c/Users/Ted/.claude/skills/job-application-helper
-bash scripts/verify_page_count.sh assets/outputs/[FOLDER]/[FILENAME].docx 2
+cd skills/job-application-helper
+bash scripts/verify_page_count.sh assets/outputs/[FOLDER]/[FILENAME].docx ${TARGET_PAGES}
 ```
 
 - **PASS** → proceed to delivery
-- **FAIL (3 pages)** → cut content per `xml_editing_guide.md` > Content Reduction Strategy and re-run
+- **FAIL (wrong page count)** → cut content per `xml_editing_guide.md` > Content Reduction Strategy and re-run
 - **ERROR (LibreOffice/pdfinfo not found)** → fall back to char count (see below) and flag the tool issue to the user
 
 **Caveat:** LibreOffice may render a few lines differently than Word, so an LO "PASS" is not a guarantee. After you get a PASS, also check char count and bullet lengths as secondary guards. Still tell the user to do a final spot-check in Word before submitting — but that is a secondary step, not the primary verification.
 
-**NOTE on the baseline:** The *baseline* resume is intentionally 3 pages (all content included). `verify_page_count.sh` will always report 3 for the baseline. Run it only on the packed tailored output in `assets/outputs/`.
+**NOTE on the baseline:** The baseline resume may be more pages than the target (all content included). `verify_page_count.sh` on the baseline will report its original page count. Run it only on the packed tailored output in `assets/outputs/`.
 
 **Char count fallback (use only if script unavailable):**
 
@@ -32,15 +32,15 @@ bash scripts/verify_page_count.sh assets/outputs/[FOLDER]/[FILENAME].docx 2
 python scripts/para_utils.py chars unpacked/word/document.xml
 ```
 
-**Target char range: 7060–7450 chars.** Stay away from the 7430 ceiling — layout variance and line wrapping can push a borderline resume to 3 pages.
+**Target char range: 7060–7450 chars** (calibrated by `setup_baseline.sh` / `onboard.py` for your specific resume). Stay inside this range — layout variance and line wrapping can push a borderline resume over the page limit.
 
-**Single-line bullet rule**: Keep all experience bullets under ~110 chars. Bullets in the 113–158 char range wrap to 2 lines; each wrap costs ~14pt of vertical space. Four extra wraps ≈ 56pt ≈ enough to push a borderline resume to 3 pages.
+**Single-line bullet rule**: Keep all experience bullets under ~110 chars. Bullets in the 113–158 char range wrap to 2 lines; each wrap costs ~14pt of vertical space. Four extra wraps ≈ 56pt ≈ enough to push a borderline resume over the page limit.
 
 ## Page Gap Check
 
-**After the user confirms 2 pages, check for excess whitespace at the bottom of page 2.**
+**After the user confirms the correct page count, check for excess whitespace at the bottom of the last page.**
 
-If more than ~2 blank lines remain at the bottom of page 2, add content to fill the gap — in this priority order:
+If more than ~2 blank lines remain at the bottom of the last page, add content to fill the gap — in this priority order:
 
 1. **Restore a publication**: Add back a previously removed publication from the baseline if it is relevant to the target role. Prefer first-author publications; co-author papers are acceptable if the topic aligns with the job description.
 2. **Add an experience bullet**: Add the next most-relevant bullet from `references/user_profile.md` > Complete Experience Bullets for the most relevant role, keeping it under 110 chars.
@@ -52,7 +52,7 @@ A char count near the bottom of the range (6680–6810) is a signal that a gap l
 
 **Every experience role must have a minimum of 3 bullet points.**
 
-When cutting content to hit the 2-page limit, never reduce any role below 3 bullets. Cut from publications or trim bullet length instead. After all edits, count bullets under each role header before packing — if any role has fewer than 3, add the most relevant bullet from `references/user_profile.md` > Complete Experience Bullets.
+When cutting content to hit the page limit, never reduce any role below 3 bullets. Cut from publications or trim bullet length instead. After all edits, count bullets under each role header before packing — if any role has fewer than 3, add the most relevant bullet from `references/user_profile.md` > Complete Experience Bullets.
 
 ## Publication Order Rule
 
@@ -99,7 +99,7 @@ Before presenting materials, verify:
 
 Complete this checklist BEFORE delivering files to the user:
 
-- [ ] **PAGE COUNT: Run `verify_page_count.sh` and confirm PASS (2 pages). Fix and re-run if FAIL. Then instruct user to spot-check in Word.**
+- [ ] **PAGE COUNT: Run `verify_page_count.sh` and confirm PASS (TARGET_PAGES). Fix and re-run if FAIL. Then instruct user to spot-check in Word.**
 - [ ] **CHAR COUNT: Total chars in target range 7060–7450 (run `para_utils.py chars`)**
 - [ ] **BULLET LENGTH: All experience bullets ≤110 chars (run `para_utils.py list` and check)**
 - [ ] **MIN BULLETS: Every experience role has ≥3 bullets**

@@ -1,13 +1,14 @@
 # Setup Guide — job-application-helper
 
-This guide covers everything a new user needs to do before running their first job application.
+This guide covers everything a new user needs to do before running their first tailored job application.
 
 ## Prerequisites
 
 | Tool | Required | Purpose |
 |------|----------|---------|
-| Python 3.8+ | Yes | XML editing, char counting, pack/unpack |
-| `lxml` Python package | Yes | XML parsing (`pip install lxml`) |
+| Python 3.8+ | Yes | Onboarding, XML editing, char counting, pack/unpack |
+| `python-docx` | Yes | Resume parsing (`pip install python-docx`) |
+| `lxml` | Yes | XML parsing (`pip install lxml`) |
 | LibreOffice | Optional | Page count verification |
 | Poppler (`pdfinfo`) | Optional | Page count verification (used by LibreOffice step) |
 
@@ -15,128 +16,120 @@ LibreOffice and Poppler are only needed for automated page count checks. You can
 
 ---
 
-## Step 1 — Add Your Baseline Resume
+## Step 1 — Run the Onboarding Script
 
-Replace the placeholder baseline with your own resume:
-
-```
-assets/Ted_Cohen-RESUME.docx
-```
-
-This file is the source that every tailored resume is copied from. It must be a `.docx` file. The skill edits it directly via XML — its formatting, fonts, spacing, and section structure become the template for all output resumes.
-
-**Requirements for your baseline:**
-- Must render as **exactly 3 pages** in Microsoft Word (the skill trims to 2 pages per application)
-- Should include all experience, publications, and skills you might ever want to draw from
-- Use standard fonts (Arial recommended) and no text boxes, tables, or multi-column layouts
-
-> If your baseline is already 2 pages or is 4+ pages, the calibration ratios will still work but the computed char count targets will be approximations. Manual tuning may be needed after your first application.
-
----
-
-## Step 2 — Run the Baseline Setup Script
-
-After placing your resume, run the calibration script to compute the correct char count targets for your document:
+Run `onboard.py` with your baseline resume. This single command handles everything:
 
 ```bash
 cd skills/job-application-helper
-bash scripts/setup_baseline.sh
+python scripts/onboard.py --resume /path/to/Your_Resume.docx
 ```
 
-This script:
-1. Unpacks your baseline and counts its total characters
-2. Checks its page count with LibreOffice (if installed)
-3. Computes calibrated 2-page char count ranges using empirical ratios
-4. Automatically updates `references/xml_editing_guide.md` and `references/qa_and_delivery.md` with your values
+**What it does automatically:**
+1. Parses your resume — detects your name, contact info, sections, and experience bullets
+2. Copies your resume to `assets/` under a clean `FirstName_LastName-RESUME.docx` filename
+3. Writes `config.sh` so all scripts know your filename
+4. Scaffolds `references/user_profile.md` pre-populated with your actual bullet text
+5. Scaffolds `references/list_of_key_accomplishments.md` from your resume's accomplishments section
+6. Creates a blank `references/list_of_target_companies.md`
+7. Calibrates char count targets for your specific resume
 
-**Example output:**
-```
-=== Baseline Resume Setup ===
-Baseline: assets/Ted_Cohen-RESUME.docx
-
-Step 1: Measuring baseline char count...
-  Baseline char count: 7679
-
-Step 2: Checking baseline page count with LibreOffice...
-  Baseline page count: 3
-  OK: Baseline is 3 pages as expected.
-
-Step 3: Computing calibrated 2-page char count ranges...
-  Baseline chars:      7679
-  2-page floor:        6970   (too sparse below this)
-  2-page ceiling:      7430   (risk of 3 pages above this)
-  Target range:        7200–7350 (recommended sweet spot)
-
-Step 4: Updating reference files...
-  Updated: references/xml_editing_guide.md
-  Updated: references/qa_and_delivery.md
-```
-
-### Options
-
+**Optional flags:**
 ```bash
-# Skip LibreOffice (if not installed)
-bash scripts/setup_baseline.sh --no-verify
+# Also set up a cover letter template
+python scripts/onboard.py --resume /path/to/resume.docx \
+                           --cover-letter /path/to/coverletter.docx
 
-# Preview computed values without modifying any files
-bash scripts/setup_baseline.sh --dry-run
+# Override the auto-detected name
+python scripts/onboard.py --resume /path/to/resume.docx --name "Jane Doe"
 
-# Use a baseline at a different path
-bash scripts/setup_baseline.sh --baseline path/to/MyResume.docx
+# Preview what would happen without writing any files
+python scripts/onboard.py --resume /path/to/resume.docx --dry-run
+
+# Overwrite existing files without prompting (re-onboarding)
+python scripts/onboard.py --resume /path/to/resume.docx --force
 ```
+
+---
+
+## Step 2 — Fill In Your Details
+
+After onboarding, open the scaffolded reference files and complete them:
+
+### `references/user_profile.md`
+Most sections are pre-populated from your resume. Review and complete:
+- **Basic Information** — verify contact details, add location if missing, add GitHub/portfolio if applicable
+- **Professional Summary** — polish the draft pulled from your resume into a 2–3 sentence branding statement
+- **Key Competencies** — clean up the skill lines detected from your Skills section
+- **Work Experience** — bullets are populated from your resume; add any that are missing or tweak wording
+- **Education** — verify institution/degree lines parsed from your resume
+- **Target Roles** — fill in the role types, industries, and locations you are targeting
+
+### `references/list_of_key_accomplishments.md`
+If your resume had an accomplishments section, entries are pre-populated. For each:
+- Verify the metrics are accurate and current
+- Add the `[Add metrics]` detail for any entries that lack quantification
+- Add tags (e.g., `leadership`, `technical`, `cross-functional`)
+
+### `references/list_of_target_companies.md`
+Fill in the companies and roles you are actively targeting. Used during cover letter research.
 
 ---
 
 ## Step 3 — Verify the Calibration
 
-The char count ranges are **estimates** based on empirical ratios from the original baseline. Word and LibreOffice render documents slightly differently, so the ranges may need minor adjustment for your specific resume.
+The char count ranges computed by `onboard.py` are estimates based on empirical ratios. Word and LibreOffice render documents slightly differently, so ranges may need minor adjustment.
 
 To verify:
 1. Run your first tailored application through the full skill workflow
-2. Open the output `.docx` in **Microsoft Word** and confirm it is exactly 2 pages
+2. Open the output `.docx` in **Microsoft Word** and confirm it is exactly the right number of pages
 3. Check its char count: `python scripts/para_utils.py chars unpacked/word/document.xml`
-4. If the resume is 2 pages and the char count is **outside** the target range, you have two calibration data points — update the ceiling or floor in `references/xml_editing_guide.md` to match what you observed
+4. If the page count in Word doesn't match expectations, re-run with a corrected target:
+   ```bash
+   bash scripts/setup_baseline.sh --target-pages 2 --no-verify
+   ```
 
 ---
 
-## Step 4 — Update the Skill's Name References (Optional)
+## Manual Setup (Alternative to onboard.py)
 
-The skill files contain "Ted Cohen" in several places. If you want cleaner output for your own name:
+If you prefer to configure manually:
 
-- `scripts/prepare_resume.sh` — hardcodes `Ted_Cohen-RESUME.docx` as the baseline filename
-- `scripts/prepare_cover_letter.sh` — hardcodes `Ted_Cohen-COVERLETTER.docx`
-- `SKILL.md` — references `Ted_Cohen-RESUME.docx` and `Ted_Cohen-COVERLETTER.docx`
+1. **Copy your resume to `assets/`** — use the naming convention `FirstName_LastName-RESUME.docx`
 
-These are cosmetic references — the skill works correctly regardless. But if you want output files named after you, update these references and rename the asset files accordingly.
+2. **Create `config.sh`** from the template:
+   ```bash
+   cp config.template.sh config.sh
+   # Edit config.sh with your name and TARGET_PAGES
+   ```
 
----
+3. **Run `setup_baseline.sh`** to calibrate char count targets:
+   ```bash
+   bash scripts/setup_baseline.sh --no-verify
+   ```
 
-## Step 5 — Update User Profile and References
-
-Edit the following files in `references/` to reflect your background:
-
-| File | What to update |
-|------|---------------|
-| `user_profile.md` | Your role, experience, competencies, and complete experience bullets |
-| `list_of_key_accomplishments.md` | Your top 3–5 accomplishments with metrics |
-| `list_of_target_companies.md` | Your target companies and roles |
-
-These files are the primary source Claude uses when selecting and writing resume content. The more complete and accurate they are, the better the tailoring.
+4. **Fill in reference files** in `references/` — use the blank templates in `templates/` as a starting point, or see Step 2 above for what each file needs.
 
 ---
 
 ## Troubleshooting
 
-**`verify_page_count.sh` reports 3 pages even after cutting content**
+**`onboard.py` can't find my resume sections**
+Run `python scripts/parse_resume.py your_resume.docx --verbose` to see which signals fired for each paragraph. If your resume uses unusual formatting (e.g., all section headers are manually bolded with no Word heading styles), the heuristic scoring should still catch them. If not, open an issue with your resume's header formatting pattern.
+
+**`verify_page_count.sh` reports wrong page count**
 LibreOffice renders documents slightly differently than Word. Use char count as your primary gate and verify in Word manually. See `references/qa_and_delivery.md` for guidance.
 
 **Script can't find Python**
-The script looks for `python3` then `python`. Make sure one is in your PATH and has `lxml` installed (`pip install lxml`).
+The script looks for `python3` then `python`. Make sure one is in your PATH and has `lxml` and `python-docx` installed:
+```bash
+pip install lxml python-docx
+```
 
 **LibreOffice step fails with a path error**
 LibreOffice can fail on paths with spaces. The script copies to a temp directory to avoid this, but if the issue persists, use `--no-verify` and check page count manually in Word.
 
-**Char count is in range but resume is still 3 pages**
+**Char count is in range but resume is still the wrong page count**
 Experience bullets longer than ~110 characters wrap to 2 lines in Word. Each extra wrap adds ~14pt of height. Check for long bullets:
 ```bash
 python scripts/para_utils.py list unpacked/word/document.xml

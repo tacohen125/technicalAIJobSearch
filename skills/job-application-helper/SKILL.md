@@ -1,16 +1,16 @@
 ---
 name: job-application-helper
-description: "Tailors resumes and cover letters for job applications using LinkedIn Parsing System (LPS) optimization. Use this skill when the user requests: (1) Creating or updating a resume for a specific job posting, (2) Writing or customizing a cover letter for a role, (3) Optimizing application materials for ATS/LPS systems, (4) Analyzing job descriptions to identify keyword matches and skill gaps, (5) Formatting resumes or cover letters to maintain professional standards while maximizing keyword density, or (6) Any task involving job application document preparation. This skill specializes in Technical Program Manager, Senior Integration Engineer, and Engineering Program Manager roles in Tech, Aerospace/Defense, and Outdoors industries, but is not limited to these."
+description: "Tailors resumes and cover letters for job applications using LinkedIn Parsing System (LPS) optimization. Use this skill when the user requests: (1) Creating or updating a resume for a specific job posting, (2) Writing or customizing a cover letter for a role, (3) Optimizing application materials for ATS/LPS systems, (4) Analyzing job descriptions to identify keyword matches and skill gaps, (5) Formatting resumes or cover letters to maintain professional standards while maximizing keyword density, or (6) Any task involving job application document preparation."
 ---
 
 # Job Application Tailoring
 
 ## Source Documents
 
-- **Baseline Resume**: `assets/Ted_Cohen-RESUME.docx` (MUST be edited via XML, never recreated)
-- **LinkedIn Profile**: https://www.linkedin.com/in/tacohen/ (for additional experience details)
-- **Cover Letter Template (script)**: `assets/Ted_Cohen-COVERLETTER.docx` (copied and XML-edited by `prepare_cover_letter.sh`)
-- **Cover Letter Reference (Claude)**: `assets/Ted_Cohen-COVERLETTER.md` (human-readable mirror — use for paragraph-length reference during XML editing)
+- **Baseline Resume**: `assets/{RESUME_BASENAME}` from `config.sh` (MUST be edited via XML, never recreated)
+- **LinkedIn Profile**: see `references/user_profile.md` > Basic Information (for additional experience details)
+- **Cover Letter Template (script)**: `assets/{COVERLETTER_BASENAME}` from `config.sh` (copied and XML-edited by `prepare_cover_letter.sh`)
+- **Cover Letter Reference (Claude)**: the `.md` mirror of your cover letter in `assets/` (human-readable — use for paragraph-length reference during XML editing)
 - **Target Companies List**: `references/list_of_target_companies.md`
 
 ## Core Principles
@@ -91,7 +91,7 @@ When provided with a job posting, immediately:
 
 ### Step 2: Resume Tailoring
 
-**CRITICAL REQUIREMENT: The final resume MUST NOT exceed 2 pages. This is non-negotiable. Plan your edits with this constraint in mind.**
+**CRITICAL REQUIREMENT: The final resume MUST NOT exceed the user's target page count (TARGET_PAGES in `config.sh`). This is non-negotiable. Plan your edits with this constraint in mind.**
 
 **CRITICAL: Use XML-Based Editing Approach**
 
@@ -142,7 +142,7 @@ Use individual scripts for granular control:
 
 3. **Pack the edited XML back to .docx**:
    ```bash
-   python3 <pack_script_path> unpacked/ [output_filename].docx --original <skill_dir>/assets/Ted_Cohen-RESUME.docx
+   python3 <pack_script_path> unpacked/ [output_filename].docx --original <skill_dir>/assets/${RESUME_BASENAME}
    ```
 
    The `pack_script_path` will be shown by `prepare_resume.sh`. It's searched in order: `scripts/pack.py` (local), `/mnt/skills/public/docx/scripts/office/pack.py` (browser), or `~/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx/ooxml/scripts/pack.py` (CLI).
@@ -156,7 +156,7 @@ Use individual scripts for granular control:
 
 > **Note:** For exact XML attributes (bold tags, bullet numbering, spacing, etc.) for each section below, see `references/xml_editing_guide.md` > Section-Specific Formatting.
 
-This requirement takes precedence over all other optimizations. If keyword density and page count conflict, page count wins. A 2-page resume with 70% keyword match is better than a 3-page resume (which is not allowed) with 80% keyword match.
+This requirement takes precedence over all other optimizations. If keyword density and page count conflict, page count wins. A correctly-sized resume with 70% keyword match is better than one that exceeds the page limit with 80% keyword match.
 
 1. **Branding Title** (bold text, no section header):
    - Located immediately after LinkedIn URL
@@ -226,7 +226,7 @@ This requirement takes precedence over all other optimizations. If keyword densi
    - Use keywords in context, not as keyword stuffing
    - Mirror exact phrases from job posting when accurate
 
-If the resume exceeds 2 pages, follow the content reduction strategy in `references/xml_editing_guide.md` > Content Reduction Strategy.
+If the resume exceeds the target page count, follow the content reduction strategy in `references/xml_editing_guide.md` > Content Reduction Strategy.
 
 For formatting rules and protected attributes, see `references/xml_editing_guide.md` > Formatting Rules.
 
@@ -256,7 +256,7 @@ When adding, restoring, or modifying any publication or presentation entry, you 
 
 **CRITICAL: Use XML-Based Editing Approach**
 
-The cover letter template (`assets/Ted_Cohen-COVERLETTER.docx`) must be edited via XML to preserve exact formatting — never recreate from scratch.
+The cover letter template (`assets/{COVERLETTER_BASENAME}` from `config.sh`) must be edited via XML to preserve exact formatting — never recreate from scratch.
 
 #### Required Process:
 
@@ -266,7 +266,7 @@ bash scripts/prepare_cover_letter.sh [output_filename].docx [unpacked_dir]
 
 This copies the template and unpacks it. Then:
 1. Edit XML at `unpacked_cl/word/document.xml`
-2. Pack: `python scripts/pack.py unpacked_cl/ [output_filename].docx --original assets/Ted_Cohen-COVERLETTER.docx`
+2. Pack: `python scripts/pack.py unpacked_cl/ [output_filename].docx --original assets/${COVERLETTER_BASENAME}`
 3. Verify 1 page: `bash scripts/verify_page_count.sh [output_filename].docx 1`
 4. Clean up: `bash scripts/cleanup_unpacked.sh unpacked_cl/ --force`
 
@@ -293,12 +293,10 @@ Aim to maintain the same paragraph lengths as in `assets/Ted_Cohen-COVERLETTER.m
 
 2. **Body paragraphs (2-3 paragraphs)**:
    - Paragraph 1-2: Highlight 2-3 accomplishments directly matching top requirements
-     - First paragraph focuses on University of Washington and Meta lithography experience.
-     - Second paragraph highlights Meta Metrology experience.
+     - Draw from the most recent and most relevant roles in `references/user_profile.md` > Complete Experience Bullets
      - Use STAR method elements (Situation, Task, Action, Result)
-     - Include specific metrics and outcomes.
-     - Draw from Meta, HCL Tech, and University of Washington experiences as relevant.
-     - Avoid repeating very specific details that are already in my resume.
+     - Include specific metrics and outcomes from `references/list_of_key_accomplishments.md`
+     - Avoid repeating very specific details that are already in the resume
 
    - Paragraph 3: Demonstrate company knowledge and cultural fit
      - **Always use web search** to find recent company news, products, or initiatives
@@ -323,7 +321,7 @@ Open the PDF and inspect the bottom of each page. If any page has more than ~3 b
 1. **Preferred fix**: Add a bullet from the relevant role's section in `references/user_profile.md` to fill the gap. Choose the bullet with the strongest keyword match to the job description that is not already represented in the resume.
 2. **If adding a bullet would exceed 2 pages**: Shorten an existing verbose bullet in the same role to make room, then add the new one.
 3. **If a forced page break caused the gap**: Consider whether removing or repositioning the page break would produce a better layout (e.g., if the following section fits cleanly on page 1 with room to spare).
-After any gap fix, re-run `verify_page_count.sh` to confirm the resume is still exactly 2 pages.
+After any gap fix, re-run `verify_page_count.sh` to confirm the resume is still the correct page count.
 
 ### Step 5: Delivery
 
@@ -339,15 +337,15 @@ mkdir -p "${FOLDER}"
 - No spaces in folder name — use hyphens throughout (e.g., `260310-Google-ProcessIntegrationEngineer`)
 
 **Files to place in the folder**:
-1. Resume: `Ted_Cohen-RESUME-[CompanyName]-[RoleTitle].docx`
-2. Cover letter: `Ted_Cohen-COVERLETTER-[CompanyName]-[RoleTitle].docx`
+1. Resume: `{FirstName_LastName}-RESUME-[CompanyName]-[RoleTitle].docx`
+2. Cover letter: `{FirstName_LastName}-COVERLETTER-[CompanyName]-[RoleTitle].docx`
 3. Job description: `job_description.md` — a markdown file containing the full job description text provided by the user
 
 **Steps**:
 ```bash
 mkdir -p assets/outputs/[YYMMDD]-[CompanyName]-[RoleTitle]
-mv Ted_Cohen-RESUME-[CompanyName]-[RoleTitle].docx assets/outputs/[YYMMDD]-[CompanyName]-[RoleTitle]/
-mv Ted_Cohen-COVERLETTER-[CompanyName]-[RoleTitle].docx assets/outputs/[YYMMDD]-[CompanyName]-[RoleTitle]/
+mv {FirstName_LastName}-RESUME-[CompanyName]-[RoleTitle].docx assets/outputs/[YYMMDD]-[CompanyName]-[RoleTitle]/
+mv {FirstName_LastName}-COVERLETTER-[CompanyName]-[RoleTitle].docx assets/outputs/[YYMMDD]-[CompanyName]-[RoleTitle]/
 # Write job_description.md with the job description text
 ```
 

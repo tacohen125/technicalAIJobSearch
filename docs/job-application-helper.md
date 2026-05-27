@@ -4,7 +4,7 @@ A Claude AI skill for automating and optimizing job application materials using 
 
 ## Overview
 
-This skill provides a comprehensive workflow for creating tailored resumes and cover letters optimized for specific job postings. It specializes in Research Scientist, Metrology Engineer, and Integration Engineer roles in photonics, semiconductors, and quantum technology.
+This skill provides a comprehensive workflow for creating tailored resumes and cover letters optimized for specific job postings. It works for any professional background — run `onboard.py` with your resume and it configures itself to your experience, sections, and target page count automatically.
 
 ### Example Resume Output
 ![Resume evolution: Baseline (left) vs. Claude Tailored (right) ](../images/output-baseline-resumes-sidebyside.png)
@@ -43,92 +43,47 @@ This skill provides a comprehensive workflow for creating tailored resumes and c
 
 ## ⚠️ Important: Personalization Required
 
-**This skill is pre-configured with example data and MUST be customized before use.** The asset files and reference data are specific to the original user and will not work for your job search without modification.
+**This skill must be configured with your resume and background before use.** Run the onboarding script — it handles everything automatically.
 
-### Files You MUST Update
+### Quick Setup
 
-#### 1. Asset Files (Your Documents)
-
-**Location**: `skills/job-application-helper/assets/`
-
-- **`Ted_Cohen-RESUME.docx`**: Replace with your own baseline resume
-  - Use placeholder text like `[City, State]`, `[Phone]`, `[Email]`, `[LinkedIn]` for contact info
-  - Maintain standard section headers (Experience, Education, Technical Skills, Key Accomplishments)
-  - Use consistent formatting (the XML editing approach depends on it)
-  - Ensure it's a `.docx` file, not `.doc` or PDF
-
-- **`Ted_Cohen-COVERLETTER.docx`**: Replace with your own baseline cover letter — this is the actual template used by the script
-  - `prepare_cover_letter.sh` copies this file, unpacks it to XML, and repacks it after editing
-  - Must be a `.docx` file; keep the same paragraph structure (P005–P026) so the script's paragraph map stays valid
-
-- **`Ted_Cohen-COVERLETTER.md`**: Human-readable mirror of the `.docx` template — used by Claude as a paragraph-length reference during XML editing
-  - Keep this in sync with the `.docx` whenever you update the baseline cover letter
-  - Not used by the script directly, but referenced in the SKILL.md Step 3 workflow
-
-#### 2. Reference Files (Your Background)
-
-**Location**: `skills/job-application-helper/references/`
-
-- **`user_profile.md`**: Update with YOUR information
-  - Current role, experience level, location
-  - Target roles, industries, salary range
-  - Key competencies and career goals
-  - Work preferences (remote, hybrid, onsite)
-
-- **`list_of_key_accomplishments.md`**: Replace with YOUR achievements
-  - Use metrics and specific outcomes
-  - Format: bold opening + detailed description
-  - Include 5-10 accomplishments to choose from
-
-- **`list_of_target_companies.md`**: Replace with YOUR target companies
-  - Companies you're actively pursuing
-  - Used for networking and research prioritization
-
-#### 3. Skill Configuration (Hard-Coded Dependencies)
-
-**Location**: `skills/job-application-helper/SKILL.md`
-
-The SKILL.md file contains hard-coded references that must be updated:
-
-**Line 11**: LinkedIn Profile URL
-```yaml
-- **LinkedIn Profile**: https://www.linkedin.com/in/tacohen/
+```bash
+cd skills/job-application-helper
+python scripts/onboard.py --resume /path/to/your_resume.docx
 ```
-→ Change to your LinkedIn profile URL
 
-**Line 10**: Baseline resume filename
-```yaml
-- **Baseline Resume**: `assets/Ted_Cohen-RESUME.docx`
-```
-→ Update to match your renamed asset files (or keep the same filenames)
+The onboarding script:
+1. Parses your resume — detects your name, contact info, work history, and skills
+2. Copies your resume to `assets/` under `FirstName_LastName-RESUME.docx`
+3. Writes `config.sh` so all scripts know your filename and target page count
+4. Scaffolds `references/user_profile.md` pre-populated with your actual experience bullets
+5. Scaffolds `references/list_of_key_accomplishments.md` from your resume's accomplishments section
+6. Creates `references/list_of_target_companies.md` as a blank template
+7. Calibrates char count targets for your specific document
 
-**Line 256-257**: Output filename pattern
-```yaml
-- Resume filename: `Cohen-RESUME-[CompanyName]-[RoleTitle].docx`
-- Cover letter filename: `Cohen-COVERLETTER-[CompanyName]-[RoleTitle].docx`
-```
-→ Update to use your name
+### After Onboarding — What to Fill In
 
-**Line 3**: Skill description
-```yaml
-description: "... This skill specializes in Technical Program Manager, Senior Integration Engineer, and Engineering Program Manager roles in Tech, Aerospace/Defense, and Outdoors industries..."
-```
-→ Update to reflect your target roles and industries
+| File | What needs your attention |
+|------|--------------------------|
+| `references/user_profile.md` | Verify contact info, polish professional summary, add target roles |
+| `references/list_of_key_accomplishments.md` | Add metrics to any pre-populated entries that lack them |
+| `references/list_of_target_companies.md` | Add your target companies and roles |
+
+### Cover Letter Setup
+
+See `templates/cover_letter_setup.md` for options:
+- **Option A**: Ask the skill to draft your first cover letter from your `user_profile.md`
+- **Option B**: Bring your own `.docx` cover letter and add it with `--cover-letter /path/to/cl.docx`
 
 ### Quick Start Checklist
 
 Before using this skill for the first time:
 
-- [ ] Replace `assets/Ted_Cohen-RESUME.docx` with your baseline resume
-- [ ] Replace `assets/Ted_Cohen-COVERLETTER.docx` with your baseline cover letter (this is what the script uses)
-- [ ] Update `assets/Ted_Cohen-COVERLETTER.md` to match — it's the human-readable mirror Claude uses for paragraph-length reference
-- [ ] Update `references/user_profile.md` with your background and goals
-- [ ] Update `references/list_of_key_accomplishments.md` with your achievements
-- [ ] Update `references/list_of_target_companies.md` with your target companies
-- [ ] Edit `SKILL.md` line 11 to include your LinkedIn URL
-- [ ] Edit `SKILL.md` lines 256-257 to use your name in output filenames
-- [ ] If you renamed your resume file, update `BASELINE=` in `scripts/prepare_resume.sh` (line 12)
-- [ ] (Optional) Edit `SKILL.md` line 3 to reflect your target roles/industries
+- [ ] Run `python scripts/onboard.py --resume /path/to/your_resume.docx`
+- [ ] Fill in `references/user_profile.md` — verify contact info, polish summary, add target roles
+- [ ] Complete `references/list_of_key_accomplishments.md` — add metrics to pre-populated entries
+- [ ] Add companies to `references/list_of_target_companies.md`
+- [ ] (Optional) Add a cover letter: re-run `onboard.py --cover-letter /path/to/cl.docx`
 
 ## How It Works
 

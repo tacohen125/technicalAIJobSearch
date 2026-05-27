@@ -16,9 +16,9 @@ A collection of Claude AI skills for comprehensive job search preparation — fr
 - ✅ LinkedIn profile optimization and comparison
 - ✅ 2-page resume enforcement
 
-**Best For:** Research Scientist, Metrology Engineer, and Integration Engineer roles in photonics, semiconductors, and quantum technology
+**Best For:** Any professional role — run `onboard.py` with your resume and it calibrates itself to your background
 
-**Personalization:** ⚠️ **Required** — Must customize with your documents and background
+**Personalization:** ⚠️ **Required** — Run `onboard.py` to configure automatically, or fill in templates manually
 
 [📖 Full Documentation](./docs/job-application-helper.md) | [📋 SKILL.md](./skills/job-application-helper/SKILL.md) | [⚙️ Setup Guide](./skills/job-application-helper/SETUP.md)
 
@@ -192,17 +192,19 @@ Generate my top 10 behavioral stories for my HyperLight interview
 
 This skill contains example data and will not work without personalization.
 
-**Quick Checklist:**
-- [ ] Replace `skills/job-application-helper/assets/Ted_Cohen-RESUME.docx` with your baseline resume
-- [ ] Replace `skills/job-application-helper/assets/Ted_Cohen-COVERLETTER.md` with your cover letter template
-- [ ] Run the baseline setup script to calibrate char count targets: `bash skills/job-application-helper/scripts/setup_baseline.sh`
-- [ ] Update `skills/job-application-helper/references/user_profile.md` with your background
-- [ ] Update `skills/job-application-helper/references/list_of_key_accomplishments.md` with your achievements
-- [ ] Update `skills/job-application-helper/references/list_of_target_companies.md` with your target companies
-- [ ] Edit `skills/job-application-helper/SKILL.md` (lines 10, 11, 256-257) to use your name and LinkedIn URL
-- [ ] If you renamed your resume file, update the `BASELINE=` path in `skills/job-application-helper/scripts/prepare_resume.sh` (line 12)
+**Quick Setup (recommended):**
+```bash
+cd skills/job-application-helper
+python scripts/onboard.py --resume /path/to/your_resume.docx
+```
+This single command parses your resume, copies it into `assets/`, writes `config.sh`, scaffolds `user_profile.md` with your actual bullet text, and calibrates char count targets automatically.
 
-[See detailed personalization guide →](./docs/job-application-helper.md#️-important-personalization-required) | [See setup guide →](./skills/job-application-helper/SETUP.md)
+**After onboarding — fill in the scaffolded files:**
+- [ ] `references/user_profile.md` — verify contact info, polish summary, add target roles
+- [ ] `references/list_of_key_accomplishments.md` — add metrics to pre-populated entries
+- [ ] `references/list_of_target_companies.md` — add your target companies
+
+[See detailed setup guide →](./skills/job-application-helper/SETUP.md) | [See full documentation →](./docs/job-application-helper.md)
 
 ### Interview Study Guide — **NO CUSTOMIZATION NEEDED**
 ✅ Automatically reads from `job-application-helper/references/user_profile.md` — works once job-application-helper is personalized
@@ -235,24 +237,30 @@ technicalAIJobSearch/
 │   ├── job-application-helper/         # Resume/cover letter skill
 │   │   ├── SKILL.md                    # Skill definition and workflow
 │   │   ├── SETUP.md                    # New user setup guide
-│   │   ├── assets/                     # Baseline documents
-│   │   │   ├── Ted_Cohen-RESUME.docx
-│   │   │   ├── Ted_Cohen-COVERLETTER.md
-│   │   │   ├── Ted_Cohen-COVERLETTER.docx
-│   │   │   ├── 260316-Linkedin-Profile.pdf
-│   │   │   └── LinkedIn_Best_Profile_Guide.pdf
-│   │   ├── references/                 # Knowledge base
-│   │   │   ├── user_profile.md
-│   │   │   ├── xml_editing_guide.md
+│   │   ├── config.template.sh          # Config template (copy to config.sh and fill in)
+│   │   ├── assets/                     # Baseline documents (your files go here)
+│   │   │   ├── {First_Last}-RESUME.docx        # Your resume (added by onboard.py)
+│   │   │   ├── {First_Last}-COVERLETTER.docx   # Your cover letter template (optional)
+│   │   │   └── {First_Last}-COVERLETTER.md     # Plain-text mirror of cover letter
+│   │   ├── references/                 # Knowledge base (pre-populated by onboard.py)
+│   │   │   ├── user_profile.md         # Your background, experience bullets, target roles
+│   │   │   ├── list_of_key_accomplishments.md  # Your top accomplishments with metrics
+│   │   │   ├── list_of_target_companies.md     # Companies you are targeting
+│   │   │   ├── xml_editing_guide.md    # XML editing rules and calibrated char counts
+│   │   │   ├── qa_and_delivery.md      # QA checklist and delivery workflow
 │   │   │   ├── linkedin_profile_optimization.md
-│   │   │   ├── list_of_key_accomplishments.md
-│   │   │   ├── list_of_target_companies.md
-│   │   │   ├── qa_and_delivery.md
 │   │   │   ├── company_research.md
 │   │   │   ├── interview_preparation.md
 │   │   │   ├── skill_gap_analysis.md
 │   │   │   └── networking_support.md
+│   │   ├── templates/                  # Blank templates for manual setup
+│   │   │   ├── user_profile.template.md
+│   │   │   ├── list_of_key_accomplishments.template.md
+│   │   │   ├── list_of_target_companies.template.md
+│   │   │   └── cover_letter_setup.md
 │   │   └── scripts/                    # Automation scripts
+│   │       ├── onboard.py              # First-time setup: parse resume, scaffold files
+│   │       ├── parse_resume.py         # Two-layer DOCX section detector
 │   │       ├── setup_baseline.sh       # Calibrates char count targets for new baseline
 │   │       ├── prepare_resume.sh
 │   │       ├── prepare_cover_letter.sh

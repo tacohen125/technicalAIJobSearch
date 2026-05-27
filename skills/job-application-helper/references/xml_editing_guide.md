@@ -141,25 +141,19 @@ Only modify text content within `<w:t>` tags. When `<w:t xml:space="preserve">` 
 
 ## Page Count — Critical Notes
 
-**The baseline resume renders as 3 pages in LibreOffice AND in Word.** `verify_page_count.sh` works correctly — always run it after packing. The 2-page target must be achieved by cutting content from the baseline.
+**Always run `verify_page_count.sh` after packing.** The target page count is set in `config.sh` as `TARGET_PAGES` and calibrated by `setup_baseline.sh`. The tailored resume must match this target — cut content if it exceeds it.
 
-**Verified 3-page char range: 6680–7560 chars.** Char count is a rough guide only — line wrapping matters as much as total chars. Use char count as a pre-check, but always run verify_page_count.sh as the final gate:
+**Verified char range: see calibrated values below.** Char count is a rough guide only — line wrapping matters as much as total chars. Use char count as a pre-check, but always run verify_page_count.sh as the final gate:
 
-**Single-line bullet rule**: Experience bullets (non-list paragraphs) must stay under ~110 chars to render as 1 line. Bullets in the 113–158 char range wrap to 2 lines, adding significant vertical space. Each extra wrap costs one line (~14pt). Four extra wraps = ~56pt ≈ pushed-to-3-page territory even when total char count looks safe. Always check the lengths of paras 19, 20, 24, 25, 26 — these are the most common overflow points.
+**Single-line bullet rule**: Experience bullets must stay under ~110 chars to render as 1 line. Bullets in the 113–158 char range wrap to 2 lines, adding significant vertical space. Each extra wrap costs one line (~14pt). Four extra wraps ≈ 56pt ≈ enough to push a borderline resume over the page limit even when total char count looks safe.
 
 ```bash
 python scripts/para_utils.py chars unpacked/word/document.xml
 # Baseline = 7679 chars (3 pages). Target: ≤7530 chars for 3 pages.
-# Do NOT use "within ±200 of baseline" — baseline is 3 pages, not 2.
+# Calibrated values are updated automatically by setup_baseline.sh / onboard.py
 ```
 
-**Publications must be cut proactively, not as a last resort.** The baseline is already a 3-page document. Tailored resumes must cut enough content to reach 2 pages (target ≤7400 chars). Cut publications first, then bullets from older/less-relevant roles. Do this before writing experience bullets:
-
-1. Remove non-first-author publications unrelated to the target role (e.g., batteries paper for optics role)
-2. Always keep: patent application, all first-author publications
-3. Can remove: second/third-author publications where the topic is clearly off-domain
-
-Typical cut: 1-2 publications frees ~4-6 lines, creating the headroom needed for tailored experience bullets.
+**If the target page count is lower than the baseline page count**, cut content proactively before writing experience bullets — don't wait until the end. Cut from the least-relevant sections first (older roles, less-relevant publications), then trim verbose bullets. Each bullet removed frees ~150–250 chars; each publication removed frees ~4–6 lines.
 
 ## Content Reduction Strategy
 
@@ -324,12 +318,12 @@ with open('unpacked/word/document.xml', 'w', encoding='utf-8') as f:
 ### Step 3 — Pack and verify
 
 ```bash
-python scripts/pack.py unpacked/ output.docx --original assets/Ted_Cohen-RESUME.docx
-python scripts/para_utils.py chars unpacked/word/document.xml   # compare to baseline ~7679
+python scripts/pack.py unpacked/ output.docx --original assets/${RESUME_BASENAME}
+python scripts/para_utils.py chars unpacked/word/document.xml   # compare against calibrated target range
 ```
 
-Note: `verify_page_count.sh` uses LibreOffice which renders the baseline as 3 pages.
-Use char count comparison instead: keep modified total within ±200 chars of baseline to stay at 2 pages in Word.
+Note: `verify_page_count.sh` uses LibreOffice which may render slightly differently than Word.
+Use char count comparison as a secondary check and always do a final spot-check in Word.
 
 ## XML Editing Examples (legacy — prefer para_utils approach above)
 
@@ -348,7 +342,7 @@ Copy an existing skill paragraph's pPr using `get` command, then use `rebuild_pa
 3. **All-caps section headers**: Use baseline casing exactly (e.g., "Experience" not "EXPERIENCE")
 4. **Keyword stuffing**: Keywords must flow naturally in context
 5. **Format deviation**: Any deviation from baseline formatting breaks professional appearance
-6. **Exceeding 2-page limit**: Always verify page count via PDF conversion before delivery. Remove less-relevant bullets rather than reducing font size or margins.
+6. **Exceeding page limit**: Always verify page count via PDF conversion before delivery. Remove less-relevant bullets rather than reducing font size or margins.
 
 ## Troubleshooting
 
