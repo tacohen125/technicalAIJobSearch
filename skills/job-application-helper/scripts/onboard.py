@@ -158,10 +158,16 @@ def scaffold_user_profile(result: dict, first: str, last: str) -> str:
     lines.append("\n---\n")
 
     # ── Experience ──────────────────────────────────────────────────────────
+    # Collect jobs from ALL EXPERIENCE sections — resumes may have a primary
+    # "Work Experience" section plus a secondary "Other Leadership Experience"
+    # or "Activities" section.  Merge them so no bullets are lost.
     lines.append("## Work Experience\n")
-    exp_sec = _section(result, "EXPERIENCE")
-    if exp_sec and exp_sec.get("jobs"):
-        for job in exp_sec["jobs"]:
+    exp_secs = [s for s in result["sections"] if s["type"] == "EXPERIENCE"]
+    all_jobs: list[dict] = []
+    for s in exp_secs:
+        all_jobs.extend(s.get("jobs", []))
+    if all_jobs:
+        for job in all_jobs:
             company = job.get("company", "[Company]")
             location = job.get("location", "")
             title    = job.get("title", "[Title]")
@@ -358,20 +364,20 @@ class Writer:
             self._actions.append(f"  [DRY RUN] would write: {tag}")
             return
         if path.exists() and not self.force:
-            try:
-                resp = input(f"  {tag} already exists. Overwrite? [y/N] ").strip().lower()
-            except EOFError:
-                # Non-interactive terminal (e.g. Claude Code CLI).
-                # Auto-overwrite blank templates; protect customised files.
-                if _is_blank_template(path):
-                    resp = "y"
-                    print("  (non-interactive: overwriting blank template)")
-                else:
+            if _is_blank_template(path):
+                # Still an unfilled template — overwrite silently in all modes.
+                # No prompt needed: the file has never been personalised.
+                pass
+            else:
+                # File has been customised — prompt interactively; skip on EOF.
+                try:
+                    resp = input(f"  {tag} already exists. Overwrite? [y/N] ").strip().lower()
+                except EOFError:
                     resp = ""
                     print(f"  (non-interactive: skipping — file has been customised; use --force to overwrite)")
-            if resp not in ("y", "yes"):
-                print(f"  Skipped: {tag}")
-                return
+                if resp not in ("y", "yes"):
+                    print(f"  Skipped: {tag}")
+                    return
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
         print(f"  Wrote: {tag}")
@@ -560,22 +566,34 @@ def main() -> None:
     if not args.no_setup_baseline and not args.dry_run:
         print("\n=== Step 8: Running setup_baseline.sh ===")
         sys.stdout.flush()
-        setup_sh = _SCRIPT_DIR / "setup_baseline.sh"
+        skill_dir = _SCRIPT_DIR.parent  # scripts/../  == skill root
+        # Use relative paths with forward slashes so bash works on both
+        # Unix (native) and Windows (Git Bash / WSL).  Absolute Windows paths
+        # (C:\...) are not resolvable by bash, causing exit code 127.
+        try:
+            baseline_rel = resume_dest.relative_to(skill_dir)
+            baseline_arg = str(baseline_rel).replace("\\", "/")
+        except ValueError:
+            # resume_dest is outside the skill dir — fall back to absolute
+            baseline_arg = str(resume_dest).replace("\\", "/")
         cmd = [
-            "bash", str(setup_sh),
-            "--baseline", str(resume_dest),
+            "bash", "scripts/setup_baseline.sh",
+            "--baseline", baseline_arg,
             "--target-pages", str(target_pages),
             "--no-verify",
         ]
         try:
-            subprocess.run(cmd, check=True)
+            subprocess.run(cmd, check=True, cwd=str(skill_dir))
         except subprocess.CalledProcessError as e:
             print(f"  WARNING: setup_baseline.sh exited with code {e.returncode}.", file=sys.stderr)
             print("  Reference files (xml_editing_guide.md, qa_and_delivery.md) may not be updated.")
-            print("  Run manually: bash scripts/setup_baseline.sh --no-verify")
+            print("  Run manually from the skill directory:")
+            print("    bash scripts/setup_baseline.sh --no-verify")
         except FileNotFoundError:
             print("  WARNING: bash not found; skipping setup_baseline.sh.", file=sys.stderr)
-            print("  Run manually: bash scripts/setup_baseline.sh --no-verify")
+            print("  Install Git Bash (Windows) or run from WSL/macOS/Linux.")
+            print("  Run manually from the skill directory:")
+            print("    bash scripts/setup_baseline.sh --no-verify")
     elif args.no_setup_baseline:
         print("\n=== Step 8: Skipped (--no-setup-baseline) ===")
     else:

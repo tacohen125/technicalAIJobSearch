@@ -62,7 +62,12 @@ SECTION_KEYWORDS: dict[str, list[str]] = {
                        "key achievements"],
     "EXPERIENCE":     ["experience", "work experience", "employment history",
                        "professional experience", "career history", "work history",
-                       "employment"],
+                       "employment",
+                       # Leadership / activities sections common on early-career resumes
+                       "leadership experience", "leadership activities",
+                       "leadership & activities", "activities and leadership",
+                       "extracurricular activities", "activities",
+                       "volunteer experience", "community involvement"],
     "EDUCATION":      ["education", "academic background", "academics",
                        "educational background", "degrees", "academic credentials"],
     "PUBLICATIONS":   ["publications", "research", "peer-reviewed publications",
@@ -246,7 +251,7 @@ def _classify_text(text: str) -> Optional[str]:
         return _KEYWORD_LOOKUP[normalized]
 
     # Rule 2: strip decorative prefix and retry
-    for prefix in ("select ", "selected ", "key ", "additional ", "relevant "):
+    for prefix in ("select ", "selected ", "key ", "additional ", "relevant ", "other "):
         if normalized.startswith(prefix):
             stripped = normalized[len(prefix):]
             if stripped in _KEYWORD_LOOKUP:
