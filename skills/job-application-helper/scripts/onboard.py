@@ -449,7 +449,7 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
-    ap.add_argument("--resume",         required=True,  help="Path to your baseline .docx resume")
+    ap.add_argument("--resume",         default=None,   help="Path to your baseline .docx resume (omit to reuse existing)")
     ap.add_argument("--cover-letter",   default=None,   help="Path to your cover letter .docx (optional)")
     ap.add_argument("--name",           default=None,   help="Override auto-detected name (e.g. 'Jane Doe')")
     ap.add_argument("--output-dir",     default=None,   help="Directory for finished resumes/cover letters")
@@ -460,13 +460,47 @@ def main() -> None:
     ap.add_argument("--force",          action="store_true", help="Overwrite existing files without prompting")
     args = ap.parse_args()
 
-    resume_path = Path(args.resume).resolve()
-    if not resume_path.exists():
-        print(f"ERROR: Resume file not found: {resume_path}", file=sys.stderr)
-        sys.exit(1)
-    if resume_path.suffix.lower() != ".docx":
-        print(f"ERROR: Expected a .docx file, got: {resume_path.name}", file=sys.stderr)
-        sys.exit(1)
+    if args.resume:
+        resume_path = Path(args.resume).resolve()
+        if not resume_path.exists():
+            print(f"ERROR: Resume file not found: {resume_path}", file=sys.stderr)
+            sys.exit(1)
+        if resume_path.suffix.lower() != ".docx":
+            print(f"ERROR: Expected a .docx file, got: {resume_path.name}", file=sys.stderr)
+            sys.exit(1)
+    else:
+        # No --resume given — look for an existing resume in assets/ via config.sh
+        skill_dir_early = _SCRIPT_DIR.parent
+        config_path = skill_dir_early / "config.sh"
+        resume_basename = None
+        if config_path.exists():
+            for line in config_path.read_text(encoding="utf-8").splitlines():
+                if line.startswith("RESUME_BASENAME="):
+                    resume_basename = line.split("=", 1)[1].strip().strip('"')
+                    break
+        if resume_basename:
+            resume_path = (skill_dir_early / "assets" / resume_basename).resolve()
+            if not resume_path.exists():
+                print(f"ERROR: config.sh points to '{resume_basename}' but it was not found in assets/.", file=sys.stderr)
+                print("  Re-run with: --resume /path/to/your-resume.docx", file=sys.stderr)
+                sys.exit(1)
+            print(f"  No --resume given; using existing resume: {resume_basename}")
+        else:
+            # No config either — prompt interactively or error
+            try:
+                raw = input("  No --resume given and no config.sh found.\n  Path to your baseline resume (.docx): ").strip()
+            except EOFError:
+                raw = ""
+            if not raw:
+                print("ERROR: --resume is required when no config.sh exists.", file=sys.stderr)
+                sys.exit(1)
+            resume_path = Path(raw).resolve()
+            if not resume_path.exists():
+                print(f"ERROR: Resume file not found: {resume_path}", file=sys.stderr)
+                sys.exit(1)
+            if resume_path.suffix.lower() != ".docx":
+                print(f"ERROR: Expected a .docx file, got: {resume_path.name}", file=sys.stderr)
+                sys.exit(1)
 
     cover_letter_path = Path(args.cover_letter).resolve() if args.cover_letter else None
     if cover_letter_path and not cover_letter_path.exists():
