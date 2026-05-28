@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -eu
+# pipefail is bash-specific and not available in all POSIX shells (e.g. dash).
+# Test in a subshell before enabling so the script works in any environment.
+if (set -o pipefail) 2>/dev/null; then set -o pipefail; fi
 
 # setup_baseline.sh — Calibrate char count targets for a new baseline resume
 #
