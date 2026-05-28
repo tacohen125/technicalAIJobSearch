@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -eu
+# pipefail is bash-specific and not available in all POSIX shells (e.g. dash).
+# Test in a subshell before enabling so the script works in any environment.
+if (set -o pipefail) 2>/dev/null; then set -o pipefail; fi
 
 # setup_baseline.sh — Calibrate char count targets for a new baseline resume
 #
@@ -200,7 +203,7 @@ echo "  Target page count: ${TARGET_PAGES} page(s) (tailored resumes will target
 # Step 3: Compute calibrated char count ranges
 # ---------------------------------------------------------------------------
 echo ""
-echo "Step 3: Computing calibrated ${TARGET_PAGES}-page char count ranges..."
+echo "Step 3: Computing calibrated char count ranges..."
 
 compute_range() {
     # Args: base_chars ratio  →  prints integer (rounds to nearest 10)
@@ -217,10 +220,10 @@ NEW_TARGET_MIN=$(compute_range "${BASELINE_CHARS}" "${RATIO_TARGET_MIN}")
 NEW_HARD_CEILING=$(compute_range "${BASELINE_CHARS}" "$(echo "${RATIO_CEILING} - 0.004" | "${PYTHON}" -c "import sys; print(eval(sys.stdin.read()))")")
 
 echo ""
-echo "  Baseline chars:       ${BASELINE_CHARS}"
-echo "  ${TARGET_PAGES}-page floor:        ${NEW_FLOOR}   (too sparse below this)"
-echo "  ${TARGET_PAGES}-page ceiling:      ${NEW_CEILING} (risk of page overflow above this)"
-echo "  Target range:         ${NEW_TARGET_MIN}–${NEW_TARGET_MAX} (recommended sweet spot)"
+echo "  Baseline chars:  ${BASELINE_CHARS}"
+echo "  Floor:           ${NEW_FLOOR}   (too sparse below this)"
+echo "  Ceiling:         ${NEW_CEILING} (risk of overflow above this)"
+echo "  Target range:    ${NEW_TARGET_MIN}–${NEW_TARGET_MAX} (recommended sweet spot)"
 echo ""
 
 # ---------------------------------------------------------------------------
@@ -329,8 +332,8 @@ echo ""
 echo "New calibration values:"
 echo "  Baseline chars:   ${BASELINE_CHARS}"
 echo "  Target pages:     ${TARGET_PAGES}"
-echo "  ${TARGET_PAGES}-page range:   ${NEW_FLOOR}–${NEW_CEILING} chars"
-echo "  Target sweet spot: ${NEW_TARGET_MIN}–${NEW_TARGET_MAX} chars"
+echo "  Char count range: ${NEW_FLOOR}–${NEW_CEILING} chars"
+echo "  Sweet spot:       ${NEW_TARGET_MIN}–${NEW_TARGET_MAX} chars"
 echo ""
 echo "Next steps:"
 echo "  1. Review changes:  git diff references/"
