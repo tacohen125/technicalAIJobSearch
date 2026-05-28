@@ -322,6 +322,30 @@ def scaffold_target_companies() -> str:
 # File write helpers (respect --dry-run and --force)
 # ---------------------------------------------------------------------------
 
+def _is_blank_template(path: Path) -> bool:
+    """
+    Return True if a text file still contains unfilled template placeholders.
+
+    Used to decide whether to auto-overwrite in non-interactive mode: if the
+    file is still a shipped blank template (never personalised), overwriting it
+    is always safe.  If the user has already filled it in, skip to protect their
+    work.
+
+    Detection: any square-bracket placeholder with 8+ characters of content,
+    e.g. [FILL IN your full name], [Title of Accomplishment], [Describe the ...],
+    [e.g. leadership, technical].  Short constructs like [x] or [!NOTE] are
+    excluded by the length threshold.  Filled-in resume content rarely contains
+    long bracket-enclosed text, so false positives are negligible.
+    """
+    try:
+        text = path.read_text(encoding="utf-8")
+        if text.strip() == "":
+            return True
+        return bool(re.search(r'\[[^\]]{8,}\]', text))
+    except Exception:
+        return False
+
+
 class Writer:
     def __init__(self, dry_run: bool, force: bool):
         self.dry_run = dry_run
@@ -337,8 +361,14 @@ class Writer:
             try:
                 resp = input(f"  {tag} already exists. Overwrite? [y/N] ").strip().lower()
             except EOFError:
-                resp = ""
-                print("  (non-interactive: skipping existing file)")
+                # Non-interactive terminal (e.g. Claude Code CLI).
+                # Auto-overwrite blank templates; protect customised files.
+                if _is_blank_template(path):
+                    resp = "y"
+                    print("  (non-interactive: overwriting blank template)")
+                else:
+                    resp = ""
+                    print(f"  (non-interactive: skipping — file has been customised; use --force to overwrite)")
             if resp not in ("y", "yes"):
                 print(f"  Skipped: {tag}")
                 return
@@ -359,8 +389,11 @@ class Writer:
             try:
                 resp = input(f"  {dst.name} already exists. Overwrite? [y/N] ").strip().lower()
             except EOFError:
-                resp = ""
-                print("  (non-interactive: skipping existing file)")
+                # Non-interactive: always overwrite the destination — the user
+                # explicitly passed this file as --resume / --cover-letter, so
+                # their intent is clear.
+                resp = "y"
+                print("  (non-interactive: overwriting with provided file)")
             if resp not in ("y", "yes"):
                 print(f"  Skipped: {dst.name}")
                 return False
@@ -368,7 +401,13 @@ class Writer:
             print(f"  Already in place: {dst.name}")
             return True
         dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(str(src), str(dst))
+        try:
+            shutil.copy2(str(src), str(dst))
+        except PermissionError:
+            print(f"  WARNING: Could not copy {dst.name} — file is locked (open in another app or syncing).")
+            print(f"    Close any open applications and retry, or copy manually:")
+            print(f"    {src}  →  {dst}")
+            return False
         print(f"  Copied: {tag}")
         return True
 
