@@ -648,9 +648,19 @@ Next steps:
   5. Review the git diff to see what changed in the reference files:
        git diff references/
 
-  6. To tailor your first resume, invoke the skill in a Claude conversation:
+  6. Install the skill so Claude can invoke it:
+
+     Claude Code CLI — copy to your skills directory:
+       cp -r /path/to/skills/job-application-helper ~/.claude/skills/
+     Then invoke with:  /job-application-helper
+
+     Claude.ai browser — package and upload:
+       python utils/package_skill.py skills/job-application-helper
+     Then: Settings → Capabilities → Skills → "+ Add" → upload the .skill file
+
+  7. To tailor your first resume, start a Claude conversation and run:
        /job-application-helper
-     (Claude Code CLI) or upload the packaged skill on claude.ai.
+     Paste the job description and specify what you need (resume, cover letter, or both).
 """)
 
 

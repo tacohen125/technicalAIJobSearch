@@ -1,0 +1,17 @@
+# Enforce LF line endings for shell scripts so they run correctly on all
+# platforms (CRLF causes "syntax error near unexpected token $'in\r'" in bash).
+*.sh    text eol=lf
+*.bash  text eol=lf
+
+# Python and Markdown: normalise to LF in the repo, check out as-is
+*.py    text eol=lf
+*.md    text eol=lf
+
+# Binary files — no line-ending conversion
+*.docx  binary
+*.pdf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.zip   binary
+*.skill binary
