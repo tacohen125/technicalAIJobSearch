@@ -430,15 +430,30 @@ def main() -> None:
 
     # ── Step 2: Confirm / override name ─────────────────────────────────────
     print("\n=== Step 2: Confirm name ===")
+    name_unknown = (raw_name == "Unknown")
     if args.name:
         confirmed_name = args.name
         print(f"  Using name from --name flag: {confirmed_name}")
     elif args.dry_run or args.force:
+        if name_unknown:
+            print("ERROR: Could not detect a name from the resume and no --name flag was given.", file=sys.stderr)
+            print("  Re-run with: --name \"First Last\"", file=sys.stderr)
+            sys.exit(1)
         confirmed_name = raw_name
         print(f"  Using detected name (non-interactive mode): {confirmed_name}")
     else:
-        prompt = f"  Detected name: \"{raw_name}\"\n  Press Enter to accept, or type a correction: "
-        override = input(prompt).strip()
+        if name_unknown:
+            prompt = "  Could not detect name from resume. Enter your full name: "
+        else:
+            prompt = f"  Detected name: \"{raw_name}\"\n  Press Enter to accept, or type a correction: "
+        try:
+            override = input(prompt).strip()
+        except EOFError:
+            override = ""
+            print("  (non-interactive terminal: using detected name as-is)")
+        if not override and name_unknown:
+            print("ERROR: Name is required. Re-run with: --name \"First Last\"", file=sys.stderr)
+            sys.exit(1)
         confirmed_name = override if override else raw_name
     print(f"  Name: {confirmed_name}")
 

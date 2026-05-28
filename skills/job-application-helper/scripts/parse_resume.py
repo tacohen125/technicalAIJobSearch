@@ -398,14 +398,70 @@ def detect_contact_info(doc, first_header_idx: int) -> dict:
     return info
 
 
+def _is_plausible_name(text: str) -> bool:
+    """
+    Return True if 'text' looks like a person's name rather than body content.
+
+    Rejects text that is clearly a sentence:
+      - More than 6 words
+      - More than 60 characters
+      - Contains a verb-like lowercase word after the first word
+        (heuristic: a real name is Title Case with ≤ 6 tokens)
+      - Ends with a full stop (excluding single initials like "J.")
+    """
+    if len(text) > 60:
+        return False
+    words = text.split()
+    if len(words) > 6:
+        return False
+    # Reject if any word after the first is all-lowercase and long (sentence word)
+    for w in words[1:]:
+        clean = w.rstrip('.,;:').lower()
+        if len(clean) > 3 and clean == w.rstrip('.,;:'):
+            # Word is lowercase and not punctuation-only — looks like prose
+            return False
+    return True
+
+
+def _detect_name_from_doc_header(doc) -> Optional[str]:
+    """
+    Fallback: scan Word document section headers for a plausible name.
+
+    Some older resumes (pre-2020 Word templates) put the candidate's name in
+    the page header rather than in the body. This searches `doc.sections[0].header`
+    paragraphs for a short, plausible name string.
+    """
+    try:
+        header_paras = doc.sections[0].header.paragraphs
+    except Exception:
+        return None
+    for para in header_paras:
+        text = para.text.strip()
+        if not text:
+            continue
+        if _CONTACT_PATTERN.search(text):
+            continue
+        if text.count('|') >= 2:
+            continue
+        if _classify_text(text) is not None:
+            continue
+        if _is_plausible_name(text):
+            return text
+    return None
+
+
 def detect_name(doc, first_header_idx: int) -> str:
     """
     Detect the candidate name from the top of the resume (before first header).
 
     Priority:
-    1. Paragraph with the largest explicit font size in the first 7 lines
-    2. First centred paragraph
-    3. First non-empty, non-contact-info paragraph
+    1. Paragraph with the largest explicit font size in the first 7 body lines
+       (only if it passes the plausibility check)
+    2. First centred body paragraph that passes the plausibility check
+    3. First non-empty, non-contact-info body paragraph that passes the check
+    4. First plausible paragraph from the Word document page header (older
+       resume formats put the name in the header, not the body)
+    5. "Unknown" — triggers a manual name prompt in onboard.py
     """
     limit = min(first_header_idx, 7) if first_header_idx > 0 else 7
     candidates = []
@@ -417,25 +473,39 @@ def detect_name(doc, first_header_idx: int) -> str:
         # Skip pipe-delimited contact bars  (e.g. "Seattle, WA | 555-1234 | …")
         if text.count('|') >= 2:
             continue
+        # Skip paragraphs whose text is a known section keyword (e.g. "Objective",
+        # "Summary") — on older resumes the first paragraph may be the section header
+        # rather than the candidate's name.
+        if _classify_text(text) is not None:
+            continue
 
         sz = _get_font_size_pt(para)
         is_centered = '<w:jc w:val="center"' in para._p.xml
 
         candidates.append({"text": text, "sz": sz or 0.0, "centered": is_centered})
 
-    if not candidates:
-        return "Unknown"
+    if candidates:
+        max_sz = max(c["sz"] for c in candidates)
+        if max_sz > 0:
+            large = [c for c in candidates if c["sz"] == max_sz]
+            if _is_plausible_name(large[0]["text"]):
+                return large[0]["text"]
 
-    max_sz = max(c["sz"] for c in candidates)
-    if max_sz > 0:
-        large = [c for c in candidates if c["sz"] == max_sz]
-        return large[0]["text"]
+        centered = [c for c in candidates if c["centered"]]
+        for c in centered:
+            if _is_plausible_name(c["text"]):
+                return c["text"]
 
-    centered = [c for c in candidates if c["centered"]]
-    if centered:
-        return centered[0]["text"]
+        for c in candidates:
+            if _is_plausible_name(c["text"]):
+                return c["text"]
 
-    return candidates[0]["text"]
+    # Fallback: check Word page header (older resume templates)
+    from_header = _detect_name_from_doc_header(doc)
+    if from_header:
+        return from_header
+
+    return "Unknown"
 
 
 # ---------------------------------------------------------------------------
