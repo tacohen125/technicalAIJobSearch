@@ -149,7 +149,7 @@ Only modify text content within `<w:t>` tags. When `<w:t xml:space="preserve">` 
 
 ```bash
 python scripts/para_utils.py chars unpacked/word/document.xml
-# Baseline = 7679 chars (3 pages). Target: ≤7530 chars for 3 pages.
+# Baseline = 2787 chars (baseline). Target: ≤2730 chars for 1 page.
 # Calibrated values are updated automatically by setup_baseline.sh / onboard.py
 ```
 
