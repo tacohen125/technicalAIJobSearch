@@ -74,6 +74,13 @@ Only modify text content within `<w:t>` tags. When `<w:t xml:space="preserve">` 
 7. Experience (header + positions with company/title/bullets)
 8. Education (header + institution line [bold name, regular location] + degree line [underlined])
 
+**Actual paragraph layout (indices from `para_utils.py list`):**
+- `[3]` — blank `[Title]` paragraph: **leave blank** — this is a visual spacer between contact info and the branding title, NOT a branding title slot
+- `[4]` — `[Title]` paragraph containing `"Summary"`: **replace this with the branding title** (use `arial_bold()`; the `[Title]` pPr is preserved by `rebuild_para`)
+- `[5]` — `[normal]` paragraph: branding statement text (use `arial_run_simple()`)
+
+> **Common mistake:** Filling para `[3]` with the branding title leaves the `"Summary"` label at `[4]` directly below it, producing two consecutive Title-style lines that look like stacked section headers. Always target `[4]`, not `[3]`.
+
 **Key spacing values:**
 - Headers: `line="276"`
 - Body paragraphs: `line="228"` or `line="229"`
@@ -87,10 +94,11 @@ Only modify text content within `<w:t>` tags. When `<w:t xml:space="preserve">` 
 ## Section-Specific Formatting
 
 ### Branding Title
-- Located immediately after LinkedIn URL
-- Bold formatting: `<w:b w:val="1"/>` and `<w:bCs w:val="1"/>`
+- Located at para `[4]` — replaces the `"Summary"` section header text (see Baseline Structure above)
+- Para `[3]` (blank Title-style spacer) must remain blank; do NOT use it for the branding title
+- Bold formatting: use `arial_bold()` inside `rebuild_para(paras[4], ...)`
 - Typically 1-2 lines describing target role/title
-- No section header
+- No additional section header before or after
 
 ### Branding Statement
 - Located immediately after Branding Title
@@ -149,7 +157,7 @@ Only modify text content within `<w:t>` tags. When `<w:t xml:space="preserve">` 
 
 ```bash
 python scripts/para_utils.py chars unpacked/word/document.xml
-# Baseline = 2787 chars (baseline). Target: ≤2730 chars for 1 page.
+# Baseline = 7434 chars (baseline). Target: ≤7290 chars for 2 pages.
 # Calibrated values are updated automatically by setup_baseline.sh / onboard.py
 ```
 

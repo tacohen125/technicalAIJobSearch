@@ -46,7 +46,7 @@ If more than ~2 blank lines remain at the bottom of the last page, add content t
 2. **Add an experience bullet**: Add the next most-relevant bullet from `references/user_profile.md` > Complete Experience Bullets for the most relevant role, keeping it under 110 chars.
 3. **Expand a trimmed bullet**: Slightly lengthen a bullet that was shortened aggressively, up to but not exceeding 110 chars.
 
-A char count near the bottom of the range (2420–2550) is a signal that a gap likely exists. Target **2560–2700 chars** to use the page fully.
+A char count near the bottom of the range (6470–6600) is a signal that a gap likely exists. Target **6840–7210 chars** to use the page fully.
 
 ## Minimum Bullets Rule
 
@@ -100,7 +100,7 @@ Before presenting materials, verify:
 Complete this checklist BEFORE delivering files to the user:
 
 - [ ] **PAGE COUNT: Run `verify_page_count.sh` and confirm PASS (TARGET_PAGES). Fix and re-run if FAIL. Then instruct user to spot-check in Word.**
-- [ ] **CHAR COUNT: Total chars in target range 2560–2700 (run `para_utils.py chars`)**
+- [ ] **CHAR COUNT: Total chars in target range 6840–7210 (run `para_utils.py chars`)**
 - [ ] **BULLET LENGTH: All experience bullets ≤110 chars (run `para_utils.py list` and check)**
 - [ ] **MIN BULLETS: Every experience role has ≥3 bullets**
 - [ ] **PAGE GAP: No more than ~2 blank lines at bottom of page 2**
