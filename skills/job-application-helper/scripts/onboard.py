@@ -334,7 +334,11 @@ class Writer:
             self._actions.append(f"  [DRY RUN] would write: {tag}")
             return
         if path.exists() and not self.force:
-            resp = input(f"  {tag} already exists. Overwrite? [y/N] ").strip().lower()
+            try:
+                resp = input(f"  {tag} already exists. Overwrite? [y/N] ").strip().lower()
+            except EOFError:
+                resp = ""
+                print("  (non-interactive: skipping existing file)")
             if resp not in ("y", "yes"):
                 print(f"  Skipped: {tag}")
                 return
@@ -352,7 +356,11 @@ class Writer:
             if src.resolve() == dst.resolve():
                 print(f"  Already in place: {dst.name}")
                 return True
-            resp = input(f"  {dst.name} already exists. Overwrite? [y/N] ").strip().lower()
+            try:
+                resp = input(f"  {dst.name} already exists. Overwrite? [y/N] ").strip().lower()
+            except EOFError:
+                resp = ""
+                print("  (non-interactive: skipping existing file)")
             if resp not in ("y", "yes"):
                 print(f"  Skipped: {dst.name}")
                 return False
