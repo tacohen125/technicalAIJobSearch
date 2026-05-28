@@ -727,10 +727,6 @@ Next steps:
   5. Review the git diff to see what changed in the reference files:
        git diff references/
 
-  Output directory (where Claude saves finished resumes and cover letters):
-    {output_dir_raw or str(skill_dir / "assets" / "outputs")}
-  To change it later, edit OUTPUT_DIR in config.sh or re-run onboard.py with --output-dir.
-
   6. Install the skill so Claude can invoke it:
 
      Claude Code CLI — copy to your skills directory:
@@ -744,6 +740,10 @@ Next steps:
   7. To tailor your first resume, start a Claude conversation and run:
        /job-application-helper
      Paste the job description and specify what you need (resume, cover letter, or both).
+
+  Output directory (where Claude saves finished resumes and cover letters):
+    {output_dir_raw or str(skill_dir / "assets" / "outputs")}
+  To change it later, edit OUTPUT_DIR in config.sh or re-run onboard.py with --output-dir.
 """)
 
 
