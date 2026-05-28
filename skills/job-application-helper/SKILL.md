@@ -124,9 +124,9 @@ This orchestrator handles preparation, editing, packing, verification, and autom
 
 **Option B: Manual workflow (for debugging)**
 
-> ⚠️ **Existing output files**: If the file already exists in `assets/outputs/`, do NOT use `prepare_resume.sh` or `create_tailored_resume.sh` — both unconditionally overwrite the target with the baseline, destroying prior edits. Instead, unpack directly:
+> ⚠️ **Existing output files**: If the file already exists in the output folder (check `OUTPUT_DIR` from `config.sh`, or `assets/outputs/` by default), do NOT use `prepare_resume.sh` or `create_tailored_resume.sh` — both unconditionally overwrite the target with the baseline, destroying prior edits. Instead, unpack directly:
 > ```bash
-> python scripts/unpack.py assets/outputs/[FOLDER]/[FILENAME].docx [unpacked_dir]
+> python scripts/unpack.py [OUTPUT_DIR]/[FOLDER]/[FILENAME].docx [unpacked_dir]
 > ```
 > Only use the prepare/create scripts when starting a brand-new tailored resume for the first time.
 
@@ -327,14 +327,19 @@ After any gap fix, re-run `verify_page_count.sh` to confirm the resume is still 
 
 **Output folder creation (mandatory)**:
 
-Create a dated output folder under `assets/outputs/`:
+Read `OUTPUT_DIR` from `config.sh`. If set and non-empty, use it as the base for the output folder. If empty or absent, default to `assets/outputs/` within the skill directory.
+
 ```bash
-FOLDER="assets/outputs/[YYMMDD]-[CompanyName]-[RoleTitle]"
+# Source config.sh to pick up OUTPUT_DIR (set during onboarding)
+source config.sh
+BASE_OUTPUT="${OUTPUT_DIR:-assets/outputs}"
+FOLDER="${BASE_OUTPUT}/[YYMMDD]-[CompanyName]-[RoleTitle]"
 mkdir -p "${FOLDER}"
 ```
 
 - Use today's date in `YYMMDD` format (e.g., `260310` for March 10, 2026)
 - No spaces in folder name — use hyphens throughout (e.g., `260310-Google-ProcessIntegrationEngineer`)
+- If `OUTPUT_DIR` is an absolute path outside the skill (e.g., `/c/Users/You/OneDrive/Documents/JobApplications`), the folder is created there directly
 
 **Files to place in the folder**:
 1. Resume: `{FirstName_LastName}-RESUME-[CompanyName]-[RoleTitle].docx`
@@ -343,9 +348,11 @@ mkdir -p "${FOLDER}"
 
 **Steps**:
 ```bash
-mkdir -p assets/outputs/[YYMMDD]-[CompanyName]-[RoleTitle]
-mv {FirstName_LastName}-RESUME-[CompanyName]-[RoleTitle].docx assets/outputs/[YYMMDD]-[CompanyName]-[RoleTitle]/
-mv {FirstName_LastName}-COVERLETTER-[CompanyName]-[RoleTitle].docx assets/outputs/[YYMMDD]-[CompanyName]-[RoleTitle]/
+source config.sh
+BASE_OUTPUT="${OUTPUT_DIR:-assets/outputs}"
+mkdir -p "${BASE_OUTPUT}/[YYMMDD]-[CompanyName]-[RoleTitle]"
+mv {FirstName_LastName}-RESUME-[CompanyName]-[RoleTitle].docx "${BASE_OUTPUT}/[YYMMDD]-[CompanyName]-[RoleTitle]/"
+mv {FirstName_LastName}-COVERLETTER-[CompanyName]-[RoleTitle].docx "${BASE_OUTPUT}/[YYMMDD]-[CompanyName]-[RoleTitle]/"
 # Write job_description.md with the job description text
 ```
 

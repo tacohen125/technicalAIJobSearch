@@ -35,3 +35,15 @@ COVERLETTER_BASENAME="${USER_FIRST_NAME}_${USER_LAST_NAME}-COVERLETTER.docx"
 # Number of pages the tailored resume should be.
 # onboard.py sets this to match your baseline resume's page count automatically.
 TARGET_PAGES=2
+
+# ---------------------------------------------------------------------------
+# Output directory
+# ---------------------------------------------------------------------------
+# Where finished resumes, cover letters, and job description files are saved.
+# Set to a folder outside the skill install so outputs stay separate from tooling.
+# Leave empty to use assets/outputs/ within the skill directory (the default).
+#
+# Examples:
+#   OUTPUT_DIR="$HOME/Documents/JobApplications"
+#   OUTPUT_DIR="/c/Users/YourName/OneDrive/Documents/JobApplications"
+OUTPUT_DIR=""
