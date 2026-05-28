@@ -85,7 +85,7 @@ A collection of Claude AI skills for comprehensive job search preparation — fr
 
 This Claude Code subagent automatically reviews and updates all skill documentation, reference materials, scripts, and XML editing guides whenever you modify your baseline resume. It prevents drift between your resume and the skill's knowledge base.
 
-**When to use:** After updating your baseline resume (`assets/Ted_Cohen-RESUME.docx`), run this agent to propagate changes across the entire skill.
+**When to use:** After updating your baseline resume (`assets/{First_Last}-RESUME.docx`), run this agent to propagate changes across the entire skill.
 
 **Key Capabilities:**
 - Unpacks and analyzes resume XML structure for formatting changes
@@ -151,6 +151,8 @@ python utils/package_skill.py skills/behavioral-story-optimization
 ```
 
 > **Note:** `behavioral-story-optimization` uses Claude Code CLI scripts — the Claude.ai browser version can invoke the skill but cannot run the Python scripts directly.
+
+> **Version control for your personal files:** Running `onboard.py` creates files that contain your personal data — your resume, cover letter, `config.sh`, `user_profile.md`, and related references. These files are not gitignored, so you can track changes to them. If you want version control of these files without exposing them publicly, **fork this repository to a private GitHub repo** before running `onboard.py`. A private fork lets you commit and diff your personal documents freely. Alternatively, you can clone the repo locally and never push — your files stay on disk only.
 
 ### Usage
 
@@ -321,7 +323,7 @@ python utils/package_skill.py skills/likert-screening-tutor ./dist
 ✅ Skill validation passed
 
   Added: job-application-helper/SKILL.md
-  Added: job-application-helper/assets/Ted_Cohen-RESUME.docx
+  Added: job-application-helper/assets/First_Last-RESUME.docx
   [... more files ...]
 
 ✅ Successfully packaged skill to: job-application-helper.skill
