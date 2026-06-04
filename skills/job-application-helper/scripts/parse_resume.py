@@ -105,6 +105,20 @@ for _sec_type, _keywords in SECTION_KEYWORDS.items():
     for _kw in _keywords:
         _KEYWORD_LOOKUP[_kw.lower().strip()] = _sec_type
 
+# Suffix lookup for compound section names like "Technical & Commercial Skills",
+# "Research & Development Experience", "Key Leadership Accomplishments", etc.
+# Rule 4 in _classify_text matches any short text ending with one of these words.
+_SUFFIX_KEYWORD_MAP: dict[str, str] = {
+    "skills":          "SKILLS",
+    "competencies":    "EXPERTISE",
+    "accomplishments": "ACCOMPLISHMENTS",
+    "achievements":    "ACCOMPLISHMENTS",
+    "experience":      "EXPERIENCE",
+    "certifications":  "CERTIFICATIONS",
+    "publications":    "PUBLICATIONS",
+    "presentations":   "PRESENTATIONS",
+}
+
 # Word paragraph style names that identify headings
 _HEADING_STYLE_NAMES = {
     "heading 1", "heading 2", "heading 3", "heading 4",
@@ -409,6 +423,14 @@ def _classify_text(text: str) -> Optional[str]:
     for kw, sec_type in _KEYWORD_LOOKUP.items():
         if normalized.startswith(kw) and len(normalized) <= len(kw) * 1.3:
             return sec_type
+
+    # Rule 4: compound section names ending with a known single-word keyword.
+    # Catches "Technical & Commercial Skills", "Research & Dev Experience", etc.
+    # Length guard (< 60 chars) reduces false positives from body sentences.
+    if len(normalized) < 60:
+        for suffix, sec_type in _SUFFIX_KEYWORD_MAP.items():
+            if normalized.endswith(" " + suffix):
+                return sec_type
 
     return None
 
