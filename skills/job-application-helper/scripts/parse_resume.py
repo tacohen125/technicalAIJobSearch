@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-parse_resume.py — Two-layer DOCX resume section detector.
+parse_resume.py — Three-layer DOCX resume section detector.
 
 Detection approach:
   Layer 1 — Word paragraph styles (Heading 1-9, Title, etc.)
@@ -18,6 +18,13 @@ Detection approach:
              Decision thresholds:
                keyword path    — keyword fired AND total ≥ 4
                no-keyword path — total ≥ 7  (strong formatting, unusual keyword)
+
+  Layer 3 — Table-cell section headers (modern template detection):
+             Many current Word resume templates use single-cell tables as
+             visual section separators. The parser walks body elements in
+             document order (paragraphs AND tables interleaved) and treats
+             a table as a section header when its first row's unique cell
+             text matches a known section keyword.
 
   Approach derived from OpenResume's validated heuristics (open-resume.com),
   adapted for DOCX (they are PDF-based). Both projects' core insight:
@@ -40,6 +47,7 @@ from typing import Optional
 
 try:
     from docx import Document
+    from docx.table import Table as _DocxTable
 except ImportError:
     print("ERROR: python-docx is required.  pip install python-docx", file=sys.stderr)
     sys.exit(1)
@@ -229,6 +237,146 @@ def _detect_page_count(path: str) -> Optional[int]:
 
 
 # ---------------------------------------------------------------------------
+# Document-order block traversal (paragraphs + tables interleaved)
+# ---------------------------------------------------------------------------
+
+def iter_block_items(doc):
+    """
+    Yield every top-level paragraph and table in document body order.
+
+    python-docx's doc.paragraphs skips table content entirely.  This generator
+    walks the raw XML children so paragraphs and tables are interleaved exactly
+    as they appear in the document, enabling correct section detection for
+    table-based resume templates.
+    """
+    from docx.oxml.text.paragraph import CT_P
+    from docx.oxml.table import CT_Tbl
+    from docx.text.paragraph import Paragraph as _Para
+    for child in doc.element.body.iterchildren():
+        if isinstance(child, CT_P):
+            yield _Para(child, doc)
+        elif isinstance(child, CT_Tbl):
+            yield _DocxTable(child, doc)
+
+
+def _table_section_header_text(table) -> Optional[str]:
+    """
+    Return section-keyword text if this table acts as a section-header cell, else None.
+
+    Handles three common modern-template patterns:
+      • 1×1 pure-header table     — entire cell is a keyword ("EDUCATION")
+      • 1×1 header+content table  — first line of cell is a keyword, rest is content
+                                    ("Selected Highlights\\nCollaborated with PI...")
+      • N-row table, row-0 keyword — first row's unique cells all share the same
+                                    keyword ("Core Competencies" repeated across 4 cols)
+
+    Tables where any cell contains contact information (email, phone, URL) are
+    treated as name/contact headers and never classified as section headers.
+    """
+    try:
+        rows = table.rows
+        if not rows:
+            return None
+
+        # Reject name/contact header tables — any cell with contact-pattern text
+        # means this is a header bar (name + email), not a section separator.
+        for row in rows:
+            for cell in row.cells:
+                if _CONTACT_PATTERN.search(cell.text):
+                    return None
+
+        # Deduplicate horizontally-merged cells using underlying _tc identity
+        seen_tc: set[int] = set()
+        first_line_texts: list[str] = []
+        for cell in rows[0].cells:
+            tc_id = id(cell._tc)
+            if tc_id in seen_tc:
+                continue
+            seen_tc.add(tc_id)
+            raw = cell.text.strip()
+            if raw:
+                first_line = next((ln.strip() for ln in raw.split('\n') if ln.strip()), "")
+                if first_line:
+                    first_line_texts.append(first_line)
+
+        if not first_line_texts:
+            return None
+
+        # All unique first-line texts must resolve to the same section type (or be all-caps)
+        sec_types: set[str] = set()
+        for t in first_line_texts:
+            st = _classify_text(t)
+            if st:
+                sec_types.add(st)
+            elif not _text_is_allcaps(t):
+                return None  # mixed content → not a clean header
+
+        if len(sec_types) > 1:
+            return None  # conflicting keywords in same row
+
+        if sec_types:
+            return first_line_texts[0]
+
+        # All-caps but no keyword match — treat as header if short
+        if len(first_line_texts) == 1 and len(first_line_texts[0]) < 60:
+            return first_line_texts[0]
+
+        return None
+    except Exception:
+        return None
+
+
+def _extract_table_content_lines(table) -> list[str]:
+    """
+    Extract all non-header text lines from a table as a flat list.
+
+    Rows whose unique cells all start with a section keyword are treated as
+    header rows and skipped.  For a 1×1 table where the single cell mixes a
+    keyword header line with content lines, only the non-keyword lines are
+    returned (the keyword line was already recorded as the section header).
+    """
+    lines: list[str] = []
+    seen_tc: set[int] = set()
+
+    for row in table.rows:
+        row_texts: list[str] = []
+        for cell in row.cells:
+            tc_id = id(cell._tc)
+            if tc_id in seen_tc:
+                continue
+            seen_tc.add(tc_id)
+            t = cell.text.strip()
+            if t:
+                row_texts.append(t)
+
+        if not row_texts:
+            continue
+
+        # Determine whether this is a keyword-only row
+        row_is_keyword = all(
+            _classify_text(t.split('\n')[0].strip()) is not None
+            for t in row_texts
+        )
+        if row_is_keyword:
+            if len(row_texts) == 1:
+                # 1×1 table: emit non-keyword lines embedded in the same cell
+                for ln in row_texts[0].split('\n'):
+                    ln = ln.strip()
+                    if ln and _classify_text(ln) is None:
+                        lines.append(ln)
+            # Multi-cell keyword row: skip entirely
+            continue
+
+        for t in row_texts:
+            for ln in t.split('\n'):
+                ln = ln.strip()
+                if ln:
+                    lines.append(ln)
+
+    return lines
+
+
+# ---------------------------------------------------------------------------
 # Section keyword classification
 # ---------------------------------------------------------------------------
 
@@ -401,6 +549,77 @@ def detect_contact_info(doc, first_header_idx: int) -> dict:
             if m:
                 info["location"] = m.group(0)
     return info
+
+
+def _detect_name_from_table_cells(pre_header_blocks: list) -> Optional[str]:
+    """
+    Scan table cells in the pre-header area for a plausible candidate name.
+
+    Modern resume templates often place the candidate's name in a header table
+    (e.g. a 1×2 table: "LILLIAN COHEN" | "email@domain.com") rather than in a
+    body paragraph.  This is called as a fallback when detect_name() returns
+    "Unknown".
+    """
+    for block in pre_header_blocks:
+        if not isinstance(block, _DocxTable):
+            continue
+        for row in block.rows:
+            seen_tc: set[int] = set()
+            for cell in row.cells:
+                tc_id = id(cell._tc)
+                if tc_id in seen_tc:
+                    continue
+                seen_tc.add(tc_id)
+                for para in cell.paragraphs:
+                    text = para.text.strip()
+                    if not text:
+                        continue
+                    if _CONTACT_PATTERN.search(text):
+                        continue
+                    if text.count('|') >= 2:
+                        continue
+                    if _classify_text(text) is not None:
+                        continue
+                    if _is_plausible_name(text):
+                        return text
+    return None
+
+
+def _supplement_contact_from_tables(pre_header_blocks: list, info: dict) -> None:
+    """
+    Fill any missing fields in `info` by scanning table cells in the pre-header area.
+    Mutates `info` in place.
+    """
+    for block in pre_header_blocks:
+        if not isinstance(block, _DocxTable):
+            continue
+        for row in block.rows:
+            seen_tc: set[int] = set()
+            for cell in row.cells:
+                tc_id = id(cell._tc)
+                if tc_id in seen_tc:
+                    continue
+                seen_tc.add(tc_id)
+                text = cell.text.strip()
+                if not text:
+                    continue
+                if not info.get("email"):
+                    m = _EMAIL_RE.search(text)
+                    if m:
+                        info["email"] = m.group(0)
+                if not info.get("phone"):
+                    m = _PHONE_RE.search(text)
+                    if m:
+                        info["phone"] = m.group(0)
+                if not info.get("linkedin"):
+                    m = _LINKEDIN_RE.search(text)
+                    if m:
+                        val = m.group(0)
+                        info["linkedin"] = val if val.startswith("http") else "https://" + val
+                if not info.get("location"):
+                    m = _LOCATION_RE.search(text)
+                    if m:
+                        info["location"] = m.group(0)
 
 
 def _is_plausible_name(text: str) -> bool:
@@ -655,80 +874,130 @@ def parse_resume(path: str) -> dict:
     doc = Document(path)
     baseline_pt = _detect_baseline_font_size(doc)
     page_count  = _detect_page_count(path)
-    paragraphs  = doc.paragraphs
     warnings: list[str] = []
 
-    # ------------------------------------------------------------------
-    # Pass 1 — identify all section headers
-    # ------------------------------------------------------------------
-    header_records: list[tuple[int, object, str, dict]] = []
-    # (paragraph_index, para, layer_label, signals)
-
-    for i, para in enumerate(paragraphs):
-        text = _text(para)
-        if not text:
-            continue
-
-        signals = _compute_signals(para, baseline_pt)
-
-        if _layer1_is_heading(para):
-            header_records.append((i, para, "layer1_style", signals))
-        elif _layer2_is_heading(signals):
-            header_records.append((i, para, "layer2_heuristic", signals))
+    # Walk body elements in document order — yields Paragraph and _DocxTable objects
+    block_items = list(iter_block_items(doc))
 
     # ------------------------------------------------------------------
-    # Pass 2 — detect name (paragraphs before first header)
+    # Pass 1 — identify section headers from paragraphs (L1/L2) and
+    #           table cells (L3).
+    # Each record: (block_idx, item, layer_label, signals, header_text)
     # ------------------------------------------------------------------
-    first_header_idx = header_records[0][0] if header_records else len(paragraphs)
-    name         = detect_name(doc, first_header_idx)
-    contact_info = detect_contact_info(doc, first_header_idx)
+    header_records: list[tuple[int, object, str, dict, str]] = []
+
+    for i, item in enumerate(block_items):
+        if isinstance(item, _DocxTable):
+            hdr_text = _table_section_header_text(item)
+            if hdr_text:
+                signals: dict = {
+                    "bold":       False,
+                    "allcaps":    _text_is_allcaps(hdr_text),
+                    "no_tab":     True,
+                    "no_bullet":  True,
+                    "short_text": len(hdr_text) < 50,
+                    "font_bump":  False,
+                    "keyword":    _classify_text(hdr_text) is not None,
+                }
+                header_records.append((i, item, "layer3_table_cell", signals, hdr_text))
+        else:
+            text = _text(item)
+            if not text:
+                continue
+            signals = _compute_signals(item, baseline_pt)
+            if _layer1_is_heading(item):
+                header_records.append((i, item, "layer1_style", signals, text))
+            elif _layer2_is_heading(signals):
+                header_records.append((i, item, "layer2_heuristic", signals, text))
+
+    # ------------------------------------------------------------------
+    # Pass 2 — detect name and contact info from the pre-header area
+    # ------------------------------------------------------------------
+    first_hdr_block_idx = header_records[0][0] if header_records else len(block_items)
+    pre_header_blocks   = block_items[:first_hdr_block_idx]
+
+    # Map paragraph _p element id → index in doc.paragraphs so the existing
+    # detect_name / detect_contact_info functions (which take a paragraph index)
+    # still work correctly for paragraph-headed resumes.
+    para_id_to_idx = {id(p._p): i for i, p in enumerate(doc.paragraphs)}
+    first_para_hdr_idx = len(doc.paragraphs)
+    for _, item, _, _, _ in header_records:
+        if not isinstance(item, _DocxTable) and hasattr(item, '_p'):
+            idx = para_id_to_idx.get(id(item._p))
+            if idx is not None:
+                first_para_hdr_idx = idx
+                break
+
+    # Table-cell name detection takes priority: modern templates put the name
+    # in a header table rather than a body paragraph, and the paragraph-based
+    # heuristic can misfire on education/job lines in those layouts.
+    name = (_detect_name_from_table_cells(pre_header_blocks)
+            or detect_name(doc, first_para_hdr_idx))
+    contact_info = detect_contact_info(doc, first_para_hdr_idx)
+    _supplement_contact_from_tables(pre_header_blocks, contact_info)
 
     # ------------------------------------------------------------------
     # Pass 3 — slice content per section and extract structured data
     # ------------------------------------------------------------------
     sections = []
 
-    for j, (idx, para, layer, signals) in enumerate(header_records):
-        header_text = _text(para)
-        sec_type    = _classify_text(header_text) or "UNKNOWN"
-        style_name  = para.style.name
+    for j, (block_idx, hdr_item, layer, signals, header_text) in enumerate(header_records):
+        sec_type   = _classify_text(header_text) or "UNKNOWN"
+        style_name = "Table" if isinstance(hdr_item, _DocxTable) else hdr_item.style.name
 
-        next_idx      = header_records[j + 1][0] if j + 1 < len(header_records) else len(paragraphs)
-        section_paras = paragraphs[idx + 1 : next_idx]
+        next_block_idx = header_records[j + 1][0] if j + 1 < len(header_records) else len(block_items)
+        content_blocks = block_items[block_idx + 1 : next_block_idx]
 
-        content_paras = [p for p in section_paras if _text(p)]
-        bullet_paras  = [p for p in section_paras if _has_numbering(p) and _text(p)]
+        # Content inline with the header table itself (header+content tables, e.g.
+        # a skills grid where row 0 is "Core Competencies" and row 1 is the skills).
+        header_inline_lines: list[str] = []
+        if isinstance(hdr_item, _DocxTable):
+            header_inline_lines = _extract_table_content_lines(hdr_item)
+
+        # Split content blocks into paragraphs and tables
+        content_paras  = [b for b in content_blocks
+                          if not isinstance(b, _DocxTable) and _text(b)]
+        content_tables = [b for b in content_blocks if isinstance(b, _DocxTable)]
+
+        # Flatten all content into a single ordered list of text lines
+        para_lines  = [_text(p) for p in content_paras]
+        table_lines: list[str] = []
+        for t in content_tables:
+            table_lines.extend(_extract_table_content_lines(t))
+        all_lines = [l for l in header_inline_lines + para_lines + table_lines if l]
+
+        bullet_count = sum(1 for p in content_paras if _has_numbering(p))
 
         entry: dict = {
             "header":          header_text,
             "type":            sec_type,
             "detection":       layer,
             "style_name":      style_name,
-            "paragraph_count": len(content_paras),
-            "bullet_count":    len(bullet_paras),
+            "paragraph_count": len(all_lines),
+            "bullet_count":    bullet_count,
             "_signal_score":   _signal_score(signals),
             "_signals":        {k: v for k, v in signals.items()},
         }
 
         # Type-specific extraction
         if sec_type == "SUMMARY":
-            entry["summary_text"] = " ".join(_text(p) for p in content_paras)
+            entry["summary_text"] = " ".join(all_lines)
         elif sec_type == "EXPERIENCE":
-            entry["jobs"] = _detect_jobs(section_paras)
+            # Job entries are almost always in body paragraphs; pass only paras
+            # to _detect_jobs so tab-based company/title parsing still works.
+            entry["jobs"] = _detect_jobs(content_paras)
         elif sec_type in ("SKILLS", "EXPERTISE"):
-            entry["skills_text"] = _extract_skills_text(content_paras)
-            entry["skills_lines"] = [_text(p) for p in content_paras if _text(p)]
+            entry["skills_text"]  = " | ".join(all_lines)
+            entry["skills_lines"] = all_lines
         elif sec_type == "ACCOMPLISHMENTS":
-            # Accomplishments can use mixed styles (ListBullet, normal+bold+tab,
-            # etc.). Capture ALL content paragraphs — not just list items — so
-            # formats like Ted's resume (2× normal+BT, 1× ListBullet) are handled.
-            entry["accomplishments"] = [_text(p) for p in content_paras]
-            entry["bullet_count"] = len(content_paras)
+            # Capture all content regardless of style (see original note).
+            entry["accomplishments"] = all_lines
+            entry["bullet_count"]    = len(all_lines)
         elif sec_type == "EDUCATION":
-            entry["content_lines"] = [_text(p) for p in content_paras if _text(p)]
+            entry["content_lines"] = all_lines
         elif sec_type in ("PUBLICATIONS", "PRESENTATIONS"):
-            entry["count"] = len(content_paras)
-            entry["content_lines"] = [_text(p) for p in content_paras if _text(p)]
+            entry["count"]         = len(all_lines)
+            entry["content_lines"] = all_lines
 
         sections.append(entry)
 
@@ -773,11 +1042,12 @@ def _print_human(result: dict, verbose: bool = False) -> None:
         _out("  ⚠  No sections detected.")
     else:
         for sec in result["sections"]:
-            layer_tag = (
-                "[L1-style]"
-                if sec["detection"] == "layer1_style"
-                else f"[L2-score:{sec['_signal_score']}]"
-            )
+            if sec["detection"] == "layer1_style":
+                layer_tag = "[L1-style]"
+            elif sec["detection"] == "layer3_table_cell":
+                layer_tag = "[L3-table]"
+            else:
+                layer_tag = f"[L2-score:{sec['_signal_score']}]"
             _out("  " + "─" * 62)
             _out(f"  Header   : \"{sec['header']}\"")
             _out(f"  Type     : {sec['type']}  {layer_tag}  (style: {sec['style_name']})")
