@@ -42,25 +42,8 @@ A collection of Claude AI skills for comprehensive job search preparation — fr
 
 ---
 
-### 3. [Likert Screening Tutor](./docs/likert-screening-tutor.md)
-**Prepares candidates for Likert-scale behavioral screenings (Google Hiring Assessment format)**
 
-**Key Features:**
-- ✅ Practice questions across 8 behavioral categories
-- ✅ Automated scoring with consistency checks
-- ✅ Timed mock assessment sessions
-- ✅ Strategic guidance for 85%+ alignment scores
-- ✅ Red flag identification and improvement recommendations
-
-**Best For:** Preparing for Google's Hiring Assessment and similar behavioral screenings used in tech hiring
-
-**Personalization:** ✅ **None Required** — Works out of the box
-
-[📖 Full Documentation](./docs/likert-screening-tutor.md) | [📋 SKILL.md](./skills/likert-screening-tutor/SKILL.md)
-
----
-
-### 4. [Behavioral Story Optimization](./docs/behavioral-story-optimization.md)
+### 3. [Behavioral Story Optimization](./docs/behavioral-story-optimization.md)
 **Maintains a STAR-format story library and generates role-tailored top 10 interview reference sheets**
 
 **Key Features:**
@@ -75,6 +58,24 @@ A collection of Claude AI skills for comprehensive job search preparation — fr
 **Personalization:** ⚠️ **Required** — Must populate `assets/rawStorySummary.md` with your own stories; requires an Anthropic API key for summary generation
 
 [📖 Full Documentation](./docs/behavioral-story-optimization.md) | [📋 SKILL.md](./skills/behavioral-story-optimization/SKILL.md)
+
+---
+
+### 4. [Likert Screening Tutor](./docs/likert-screening-tutor.md)
+**Prepares candidates for Likert-scale behavioral screenings (Google Hiring Assessment format)**
+
+**Key Features:**
+- ✅ Practice questions across 8 behavioral categories
+- ✅ Automated scoring with consistency checks
+- ✅ Timed mock assessment sessions
+- ✅ Strategic guidance for 85%+ alignment scores
+- ✅ Red flag identification and improvement recommendations
+
+**Best For:** Preparing for Google's Hiring Assessment and similar behavioral screenings used in tech hiring
+
+**Personalization:** ✅ **None Required** — Works out of the box
+
+[📖 Full Documentation](./docs/likert-screening-tutor.md) | [📋 SKILL.md](./skills/likert-screening-tutor/SKILL.md)
 
 ---
 
@@ -174,16 +175,16 @@ I have an upcoming interview at [Company] for [Role]. Please generate a full stu
 ```
 *(If you've already run job-application-helper for this role, the job description is found automatically — no paste needed.)*
 
-**Practice for behavioral assessment:**
-```
-/likert-screening-tutor
-Give me a full 75-question timed mock assessment for Google's Hiring Assessment
-```
-
 **Generate a role-tailored behavioral story reference sheet:**
 ```
 /behavioral-story-optimization
 Generate my top 10 behavioral stories for my HyperLight interview
+```
+
+**Practice for behavioral assessment:**
+```
+/likert-screening-tutor
+Give me a full 75-question timed mock assessment for Google's Hiring Assessment
 ```
 
 ---
@@ -211,14 +212,14 @@ This single command parses your resume, copies it into `assets/`, writes `config
 ### Interview Study Guide — **NO CUSTOMIZATION NEEDED**
 ✅ Automatically reads from `job-application-helper/references/user_profile.md` — works once job-application-helper is personalized
 
-### Likert Screening Tutor — **NO CUSTOMIZATION NEEDED**
-✅ Works out of the box
-
 ### Behavioral Story Optimization — **MUST CUSTOMIZE**
 - [ ] Populate `skills/behavioral-story-optimization/assets/rawStorySummary.md` with your STAR stories (excluded from version control)
 - [ ] Invoke `/behavioral-story-optimization` and ask Claude to update summaries, OR run `python scripts/story_watcher.py --once` (requires `ANTHROPIC_API_KEY`) to generate `targettedSummaries.md`
 
 [See detailed documentation →](./docs/behavioral-story-optimization.md)
+
+### Likert Screening Tutor — **NO CUSTOMIZATION NEEDED**
+✅ Works out of the box
 
 ---
 
@@ -359,17 +360,17 @@ Each skill has detailed documentation in the `docs/` folder:
   - Automatic job description resolution from outputs folder
   - Shared dependencies with job-application-helper
 
-- **[Likert Screening Tutor Documentation](./docs/likert-screening-tutor.md)**
-  - Assessment background and format
-  - Practice modes and usage
-  - Scoring rubric and strategic principles
-  - Common mistakes to avoid
-
 - **[Behavioral Story Optimization Documentation](./docs/behavioral-story-optimization.md)**
   - Raw story format and STAR summary structure
   - `story_watcher.py` incremental watcher setup (including Windows Task Scheduler)
   - `generate_top10_stories.py` usage for role-specific interview prep
   - Troubleshooting
+
+- **[Likert Screening Tutor Documentation](./docs/likert-screening-tutor.md)**
+  - Assessment background and format
+  - Practice modes and usage
+  - Scoring rubric and strategic principles
+  - Common mistakes to avoid
 
 - **[Resume Updater Agent](./agents/resume-updater.md)**
   - Subagent definition for keeping skill docs in sync with baseline resume
@@ -382,6 +383,7 @@ Each skill has detailed documentation in the `docs/` folder:
 Contributions welcome! Areas for improvement:
 
 **For job-application-helper:**
+- Compatibility with Codex and other AI models
 - Additional industry-specific templates
 - Enhanced ATS parsing rules
 - Multi-language support
@@ -423,6 +425,7 @@ MIT License - Feel free to adapt these skills for your own job search needs.
 - [ ] Portfolio review and optimization
 
 **Enhancements:**
+- [ ] cross-compatibility with other AI models
 - [ ] job-application-helper: Add more industry templates
 - [ ] interview-study-guide: Add .docx output generation natively within the skill workflow
 - [ ] likert-screening-tutor: Expand question bank to 200+ questions
