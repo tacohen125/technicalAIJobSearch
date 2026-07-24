@@ -249,7 +249,7 @@ Include: key material constants, device performance benchmarks, company roadmap 
 
 End with a personal logistics note (e.g., travel, arrival time, format of interview if known).
 
-Close the document with: `Prepared for Ted Cohen — [Company] Job ID [ID if known] — [Month Year]`
+Close the document with: `Prepared for [Name from user_profile.md > Basic Information] — [Company] Job ID [ID if known] — [Month Year]`
 
 ---
 
